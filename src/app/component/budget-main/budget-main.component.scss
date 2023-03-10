@@ -1,0 +1,35 @@
+body,
+html {
+    font-family: 'Roboto';
+}
+
+.top-box {
+    background-color: lightgrey;
+    width: auto;
+    border: 15px round($number: 13) green;
+    padding: 50px;
+    margin: 20px;
+}
+
+.top-card {
+    max-width: auto;
+    margin: 10px;
+}
+
+.example-card {
+    max-width: 400px;
+    margin: 10px;
+    display: flex;
+    float: left;
+}
+
+.float-container {
+    border: 3px solid #fff;
+    padding: 20px;
+}
+
+.float-child {
+    max-width: 300px;
+    margin-bottom: 50px;
+    float: left;
+}
