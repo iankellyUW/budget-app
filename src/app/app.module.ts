@@ -17,6 +17,10 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { CurrencyMaskModule } from 'ng2-currency-mask';
 import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
+import {MatListModule} from '@angular/material/list';
+import {MatSelectModule} from '@angular/material/select';
+//import {MatButtonModule} from '@angular/material/button';
+
 
 @NgModule({
   declarations: [
@@ -39,6 +43,9 @@ import { MatInputModule } from '@angular/material/input';
     CurrencyMaskModule,
     FormsModule,
     MatInputModule,
+    MatListModule,
+    MatSelectModule,
+    //MatButtonModule
   ],
   exports: [
     MatInputModule
