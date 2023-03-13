@@ -3,14 +3,6 @@ html {
     font-family: 'Roboto';
 }
 
-.top-box {
-    background-color: lightgrey;
-    width: auto;
-    border: 15px round($number: 13) green;
-    padding: 50px;
-    margin: 20px;
-}
-
 .top-card {
     max-width: auto;
     margin: 10px;
@@ -22,6 +14,9 @@ html {
     display: flex;
     float: left;
 }
+.expense-card {
+  margin: 10px;
+}
 
 .float-container {
     border: 3px solid #fff;
@@ -32,4 +27,22 @@ html {
     max-width: 300px;
     margin-bottom: 50px;
     float: left;
+}
+
+.mat-card{
+  max-width: 250px;
+  display:flex;
+  flex-direction: column;
+  float: none;
+  clear: both;
+  margin:10px;
+}
+
+.mat-card-header {
+  flex-shrink: 0;
+}
+
+.mat-card-content{
+  flex-grow: 1;
+  overflow: auto;
 }

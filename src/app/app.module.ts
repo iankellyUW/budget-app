@@ -17,11 +17,19 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { CurrencyMaskModule } from 'ng2-currency-mask';
 import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
+import {MatListModule} from '@angular/material/list';
+import {MatSelectModule} from '@angular/material/select';
+import { TransactionsMainComponent } from './component/transactions-main/transactions-main.component';
+import {MatTableModule} from '@angular/material/table';
+import {MatButtonModule} from '@angular/material/button';
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+
 
 @NgModule({
   declarations: [
     AppComponent,
     BudgetMainComponent,
+    TransactionsMainComponent,
   ],
   imports: [
     BrowserModule,
@@ -39,6 +47,11 @@ import { MatInputModule } from '@angular/material/input';
     CurrencyMaskModule,
     FormsModule,
     MatInputModule,
+    MatListModule,
+    MatSelectModule,
+    MatTableModule,
+    MatButtonModule,
+    MatDialogRef,
   ],
   exports: [
     MatInputModule
