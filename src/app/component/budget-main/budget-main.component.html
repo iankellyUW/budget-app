@@ -1,100 +1,101 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 <body>
-<mat-toolbar color="primary">
-  <button mat-icon-button [matMenuTriggerFor]="menu" class="example-icon"
-          aria-label="Example icon-button with menu icon">
-    <mat-icon>menu</mat-icon>
-    <mat-menu #menu="matMenu">
-      <button mat-menu-item>
-        <mat-icon>insert_drive_file</mat-icon>
-        <span>Monthly Budget</span>
-      </button>
-      <button mat-menu-item>
-        <mat-icon>attach_money</mat-icon>
-        <span>Transactions</span>
-      </button>
-      <button mat-menu-item disabled>
-        <mat-icon>timeline</mat-icon>
-        <span>Retirement</span>
-      </button>
-    </mat-menu>
-  </button>
-  &nbsp;
-  <span> Monthly Budget</span>
-
-</mat-toolbar>
-<mat-card class="top-card">
-  <mat-card-header>
-    <mat-card-title>Getting Started</mat-card-title>
-  </mat-card-header>
-  <mat-card-content>As you enter data in the 'Transactions' tab, this page will automatically update to show a summary
-    of your spending for the month.
-  </mat-card-content>
-</mat-card>
-<mat-card class="example-card">
-  <mat-card-header>
-    <mat-card-title>Starting Balance:</mat-card-title>
-  </mat-card-header>
-  <mat-card-content>
-    <mat-form-field class="example-full-width">
-      <input currencyMask [(ngModel)]="value" [options]="{ prefix: '$ ', thousands: ',', decimal: '.', precision: 2 }"
-             matInput/>
-      <button *ngIf="value" matSuffix mat-icon-button aria-label="Clear" (click)="value=0">
-        <mat-icon>close</mat-icon>
-      </button>
-    </mat-form-field>
-  </mat-card-content>
-</mat-card>
-<mat-card class="example-card">
-  <mat-card-content class="float-child">
-    <canvas class="float-child" baseChart [data]="barChartData" [options]="barChartOptions" [plugins]="barChartPlugins"
-            [legend]="barChartLegend" [type]="'bar'">
-    </canvas>
-  </mat-card-content>
-</mat-card>
-<mat-card class="example-card">
-  <mat-card-content>
-    <div>{{totalSavingsIncrease}}% Increase in Total Savings</div>
-    <br>
-    <div>{{totalSavedMonth}} Saved this Month</div>
-  </mat-card-content>
-</mat-card>
-
-<div>
-  <mat-card class="mat-card">
-    <mat-card-header class="mat-card-header">
-      <mat-card-title>
-        <mat-form-field appearance="fill">
-          <mat-label>Expense</mat-label>
-          <mat-select>
-            <mat-option *ngFor="let Expense of expenses" [value]="Expense.value">
-              {{Expense.viewValue}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </mat-card-title>
-    </mat-card-header>
-    <mat-card-content class="mat-card-content">
-      <mat-list role="list">
-        <mat-list-item>
-          <mat-form-field class="example-full-width">
-            <input currencyMask [(ngModel)]="value"
-                   [options]="{ prefix: '$ ', thousands: ',', decimal: '.', precision: 2 }"
-                   matInput/>
-            <button *ngIf="value" matSuffix mat-icon-button aria-label="Clear" (click)="value=0">
-              <mat-icon>close</mat-icon>
-            </button>
-          </mat-form-field>
-        </mat-list-item>
-        <mat-list-item>
-          <button mat-button color="primary" mat-icon-button [matMenuTriggerFor]="menu">
-            <mat-icon>done_outline</mat-icon>
+  <mat-toolbar color="primary">
+    <button mat-icon-button [matMenuTriggerFor]="menu" class="example-icon"
+            aria-label="Example icon-button with menu icon">
+      <mat-icon>menu</mat-icon>
+      <mat-menu #menu="matMenu">
+          <button (click)="switchPage(0)" mat-menu-item>
+            <mat-icon>insert_drive_file</mat-icon>
+            <span>Monthly Budget</span>
           </button>
-        </mat-list-item>
-      </mat-list>
+        <button (click)="switchPage(1)" mat-menu-item>
+          <mat-icon>attach_money</mat-icon>
+          <span>Transactions</span>
+        </button>
+        <button (click)="switchPage(2)" mat-menu-item disabled>
+          <mat-icon>timeline</mat-icon>
+          <span>Retirement</span>
+        </button>
+      </mat-menu>
+    </button>
+    &nbsp;
+    <span> Monthly Budget</span>
+
+  </mat-toolbar>
+  <mat-card class="top-card">
+    <mat-card-header>
+      <mat-card-title>Getting Started</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>As you enter data in the 'Transactions' tab, this page will automatically update to show a summary
+      of your spending for the month.
     </mat-card-content>
   </mat-card>
-</div>
+  <mat-card class="example-card">
+    <mat-card-header>
+      <mat-card-title>Starting Balance:</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
 
+      <mat-form-field>
+        <input currencyMask [(ngModel)]="value" [options]="{ prefix: '$ ', thousands: ',', decimal: '.', precision: 2 }"
+              matInput/>
+        <button *ngIf="value" matSuffix mat-icon-button aria-label="Clear" (click)="value=0">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+
+    </mat-card-content>
+  </mat-card>
+  <mat-card class="example-card">
+    <mat-card-content class="float-child">
+      <canvas class="float-child" baseChart [data]="barChartData" [options]="barChartOptions" [plugins]="barChartPlugins"
+              [legend]="barChartLegend" [type]="'bar'">
+      </canvas>
+    </mat-card-content>
+  </mat-card>
+  <mat-card class="example-card">
+    <mat-card-content>
+      <div>{{totalSavingsIncrease}}% Increase in Total Savings</div>
+      <br>
+      <div>{{totalSavedMonth}} Saved this Month</div>
+    </mat-card-content>
+  </mat-card>
+
+  <div>
+    <mat-card class="mat-card">
+      <mat-card-header class="mat-card-header">
+        <mat-card-title>
+          <mat-form-field appearance="fill">
+            <mat-label>Expense</mat-label>
+            <mat-select>
+              <mat-option *ngFor="let Expense of expenses" [value]="Expense.value">
+                {{Expense.viewValue}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content class="mat-card-content">
+        <mat-list role="list">
+          <mat-list-item>
+            <mat-form-field class="example-full-width">
+              <input currencyMask [(ngModel)]="value"
+                    [options]="{ prefix: '$ ', thousands: ',', decimal: '.', precision: 2 }"
+                    matInput/>
+              <button *ngIf="value" matSuffix mat-icon-button aria-label="Clear" (click)="value=0">
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-form-field>
+          </mat-list-item>
+          <mat-list-item>
+            <button color="primary" mat-icon-button [matMenuTriggerFor]="menu">
+              <mat-icon>done_outline</mat-icon>
+            </button>
+          </mat-list-item>
+        </mat-list>
+      </mat-card-content>
+    </mat-card>
+  </div>
 </body>

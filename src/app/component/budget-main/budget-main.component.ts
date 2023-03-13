@@ -2,6 +2,7 @@ import { Component, Directive, OnInit, ViewChild } from '@angular/core';
 import { ChartConfiguration, ChartData, ChartEvent, ChartType, Legend } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import {MatFormFieldModule} from '@angular/material/form-field';
+import { Router } from '@angular/router';
 
 interface Expense {
   value: string;
@@ -13,7 +14,6 @@ interface Expense {
   templateUrl: './budget-main.component.html',
   styleUrls: ['./budget-main.component.scss']
 })
-
 export class BudgetMainComponent implements OnInit {
   @ViewChild(BaseChartDirective) chart: BaseChartDirective | undefined;
 
@@ -67,7 +67,23 @@ export class BudgetMainComponent implements OnInit {
     }
   };
 
-  constructor() {
+  switchPage(page:number): void {
+    switch(page){
+      case 0: {
+        this.router.navigateByUrl('');
+        break;
+      }
+      case 1: {
+        this.router.navigateByUrl('transactions');
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+  }
+
+  constructor(private router: Router) {
   }
 
   ngOnInit(): void {
@@ -75,3 +91,4 @@ export class BudgetMainComponent implements OnInit {
     this.totalSavedMonth = this.formatter.format(saved);
   }
 }
+ 

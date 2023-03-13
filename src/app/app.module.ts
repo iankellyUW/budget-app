@@ -19,13 +19,17 @@ import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import {MatListModule} from '@angular/material/list';
 import {MatSelectModule} from '@angular/material/select';
-//import {MatButtonModule} from '@angular/material/button';
+import { TransactionsMainComponent } from './component/transactions-main/transactions-main.component';
+import {MatTableModule} from '@angular/material/table';
+import {MatButtonModule} from '@angular/material/button';
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     BudgetMainComponent,
+    TransactionsMainComponent,
   ],
   imports: [
     BrowserModule,
@@ -45,7 +49,9 @@ import {MatSelectModule} from '@angular/material/select';
     MatInputModule,
     MatListModule,
     MatSelectModule,
-    //MatButtonModule
+    MatTableModule,
+    MatButtonModule,
+    MatDialogRef,
   ],
   exports: [
     MatInputModule
