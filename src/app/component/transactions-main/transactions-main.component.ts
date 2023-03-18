@@ -102,11 +102,11 @@ export class TransactionsMainComponent implements OnInit {
   }
 
   pushData(): void {
-    this.dataSource.push({ date: this.currentDate.toLocaleTimeString(), amount: this.formatter.format(100), description: 'I ordered food', category: Category.food },)
+    this.dataSource.push({ date: (this.currentDate.getMonth()+1).toString()+'/'+this.currentDate.getDate().toString(), amount: this.formatter.format(100), description: 'I ordered food', category: Category.food },)
   }
 
   pushNewExpense(category: Categories) {
-    this.dataSource.push({date: this.currentDate.toLocaleTimeString(), amount: category.amount, description: category.description, category: category.category});
+    this.dataSource.push({date: (this.currentDate.getMonth()+1).toString()+'/'+this.currentDate.getDate().toString(), amount: category.amount, description: category.description, category: category.category});
     this.table.renderRows();
   }
 }
