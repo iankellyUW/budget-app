@@ -1,13 +1,8 @@
 import { Component, Directive, OnInit, ViewChild } from '@angular/core';
 import { ChartConfiguration, ChartData, ChartEvent, ChartType, Legend } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
-import {MatFormFieldModule} from '@angular/material/form-field';
 import { Router } from '@angular/router';
-
-interface Expense {
-  value: string;
-  viewValue: string;
-}
+import { Expenses } from 'src/app/model/expenses';
 
 @Component({
   selector: 'app-budget-main',
@@ -27,17 +22,13 @@ export class BudgetMainComponent implements OnInit {
   totalSavingsIncrease = 15;
   totalSavedMonth:string = '';
 
-  expenses: Expense[] = [
-      {value: 'Rent', viewValue: 'Rent'},
-      {value: 'Food', viewValue: 'Food'},
-      {value: 'Strippers', viewValue: 'Strippers'},
-    ];
-
   title = 'ng2-charts-demo';
 
   public barChartLegend = false;
   public barChartPlugins = [
   ];
+
+  public expenses = new Expenses();
 
   public barChartData: ChartConfiguration<'bar'>['data'] = {
     labels: [ 'Start Balance: ' + this.formatter.format(this.startingBalance), 'End Balance: ' + this.formatter.format(this.endingBalance)],

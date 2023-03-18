@@ -17,12 +17,13 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { CurrencyMaskModule } from 'ng2-currency-mask';
 import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
-import {MatListModule} from '@angular/material/list';
-import {MatSelectModule} from '@angular/material/select';
-import { TransactionsMainComponent } from './component/transactions-main/transactions-main.component';
-import {MatTableModule} from '@angular/material/table';
-import {MatButtonModule} from '@angular/material/button';
-import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+import { MatListModule } from '@angular/material/list';
+import { MatSelectModule } from '@angular/material/select';
+import { TransactionMainDialog, TransactionsMainComponent } from './component/transactions-main/transactions-main.component';
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialogModule } from '@angular/material/dialog';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 
 @NgModule({
@@ -30,6 +31,7 @@ import {MatDialog, MatDialogRef} from '@angular/material/dialog';
     AppComponent,
     BudgetMainComponent,
     TransactionsMainComponent,
+    TransactionMainDialog,
   ],
   imports: [
     BrowserModule,
@@ -51,13 +53,16 @@ import {MatDialog, MatDialogRef} from '@angular/material/dialog';
     MatSelectModule,
     MatTableModule,
     MatButtonModule,
-    MatDialogRef,
+    MatDialogModule,
   ],
   exports: [
     MatInputModule
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  schemas: [
+    CUSTOM_ELEMENTS_SCHEMA,
+  ]
 })
 
 export class AppModule { }

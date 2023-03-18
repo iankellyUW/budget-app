@@ -1,0 +1,26 @@
+<h1 mat-dialog-title>New Expense</h1>
+<div mat-dialog-content>
+    <p>Enter your expense:</p>
+    <mat-form-field appearance="fill">
+        <mat-label>Amount</mat-label>
+        <input matInput currencyMask [options]="{ prefix: '$ ', thousands: ',', decimal: '.', precision: 2 }" [(ngModel)]="data.amount">
+    </mat-form-field>
+    &nbsp;
+    <mat-form-field appearance="fill">
+        <mat-label>Description</mat-label>
+        <input matInput [(ngModel)]="data.description">
+    </mat-form-field>
+    &nbsp;
+    <mat-form-field appearance="fill">
+        <mat-label>Category</mat-label>
+        <mat-select [(ngModel)]="selectedValue" name="Expense">
+            <mat-option *ngFor="let Expense of expenses.expenses" [value]="Expense.value">
+                {{Expense.viewValue}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+</div>
+<div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()">Cancel</button>
+    <button mat-button (click)="confirmSelection()" [mat-dialog-close]="data" cdkFocusInitial>Ok</button>
+</div>

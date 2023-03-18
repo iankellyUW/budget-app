@@ -2,23 +2,22 @@
 
 <body>
     <mat-toolbar color="primary">
-        <button mat-icon-button [matMenuTriggerFor]="menu" class="example-icon"
-            aria-label="Example icon-button with menu icon">
+        <button mat-icon-button [matMenuTriggerFor]="menu" class="example-icon" aria-label="Example icon-button with menu icon">
             <mat-icon>menu</mat-icon>
             <mat-menu #menu="matMenu">
                 <button (click)="switchPage(0)" mat-menu-item>
                     <mat-icon>insert_drive_file</mat-icon>
                     <span>Monthly Budget</span>
                 </button>
-                <button (click)="switchPage(1)" mat-menu-item>
+        <button (click)="switchPage(1)" mat-menu-item>
                     <mat-icon>attach_money</mat-icon>
                     <span>Transactions</span>
                 </button>
-                <button (click)="switchPage(2)" mat-menu-item disabled>
+        <button (click)="switchPage(2)" mat-menu-item disabled>
                     <mat-icon>timeline</mat-icon>
                     <span>Retirement</span>
                 </button>
-            </mat-menu>
+        </mat-menu>
         </button>
         &nbsp;
         <span> Monthly Budget</span>
@@ -29,7 +28,7 @@
         </mat-card-header>
         <mat-card-content>
             <div class="demo-button-container">
-                <button mat-raised-button (click)="addData()" class="demo-button">
+                <button mat-raised-button (click)="openDialog()" class="demo-button">
                     Add data
                 </button>
                 <button mat-raised-button [disabled]="!dataSource.length" (click)="removeData()" class="demo-button">

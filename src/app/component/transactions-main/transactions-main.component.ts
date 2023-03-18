@@ -1,12 +1,17 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MatTable } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { MatDialog, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Expenses } from 'src/app/model/expenses';
 
+export interface DialogData {
+  animal: string;
+  name: string;
+}
 
 export interface Categories {
   date: string;
-  amount: number;
+  amount: string;
   description: string;
   category: Category;
 }
@@ -31,6 +36,11 @@ export class TransactionsMainComponent implements OnInit {
 
   constructor(private router: Router, public dialog: MatDialog) { }
 
+  formatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  });
+
   ngOnInit(): void {
     this.pushData();
   }
@@ -47,8 +57,10 @@ export class TransactionsMainComponent implements OnInit {
   pDescription: string = '';
   pCategory: Category = Category.empty;
 
+
+
   //category data object
-  categoryData: Categories | undefined;
+  categoryData: Categories = {date: '', amount: '$0.00', description: '',category: Category.empty };
 
   addData() {
     this.pushData();
@@ -61,13 +73,15 @@ export class TransactionsMainComponent implements OnInit {
   }
 
   openDialog(): void {
-    const dialogRef = this.dialog.open(DialogOverviewExampleDialog, {
-      data: { date: this.pDate, amount: this.pAmount, description: this.pDescription, category: this.pCategory },
+    const dialogRef = this.dialog.open(TransactionMainDialog, {
+      data: { amount: this.pAmount, description: this.pDescription, category: this.pCategory },
     })
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
+      console.log('The dialog was closed, result: ' + result);
       this.categoryData = result;
+      console.log(this.categoryData);
+      this.pushNewExpense(this.categoryData);
     });
   }
 
@@ -88,7 +102,46 @@ export class TransactionsMainComponent implements OnInit {
   }
 
   pushData(): void {
-    this.dataSource.push({ date: this.currentDate.toLocaleTimeString(), amount: 100, description: 'I ordered food', category: Category.food },)
+    this.dataSource.push({ date: this.currentDate.toLocaleTimeString(), amount: this.formatter.format(100), description: 'I ordered food', category: Category.food },)
+  }
+
+  pushNewExpense(category: Categories) {
+    this.dataSource.push({date: this.currentDate.toLocaleTimeString(), amount: category.amount, description: category.description, category: category.category});
+    this.table.renderRows();
+  }
+}
+
+@Component({
+  selector: 'transactions-main-dialog',
+  templateUrl: 'transactions-main-dialog.html',
+})
+export class TransactionMainDialog {
+  constructor(
+    public dialogRef: MatDialogRef<TransactionMainDialog>,
+    @Inject(MAT_DIALOG_DATA) public data: Categories,
+  ) {}
+
+  formatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  });
+
+  //selected value for expense dialogue
+  selectedValue: string = '';
+
+  categoryData: Categories = {date: '', amount: '$0.00', description: '',category: Category.empty };
+
+  public expenses = new Expenses();
+
+  onNoClick(): void {
+    this.dialogRef.close();
+  }
+
+  confirmSelection(): void {
+    this.categoryData.amount = this.formatter.format(Number(this.data.amount));
+    this.categoryData.description = this.data.description;
+    this.categoryData.category = this.selectedValue as Category;
+    this.dialogRef.close(this.categoryData);
   }
 }
 
