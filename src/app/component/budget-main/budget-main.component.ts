@@ -22,8 +22,6 @@ export class BudgetMainComponent implements OnInit {
   totalSavingsIncrease = 15;
   totalSavedMonth:string = '';
 
-  title = 'ng2-charts-demo';
-
   public barChartLegend = false;
   public barChartPlugins = [
   ];
@@ -41,6 +39,23 @@ export class BudgetMainComponent implements OnInit {
         borderColor: [
           'rgb(255, 99, 132)',
           'rgb(75, 192, 192)',
+        ],
+        borderWidth: 1},
+    ]
+  };
+
+  public incomeExpensesBarChartData: ChartConfiguration<'bar'>['data'] = {
+    labels: [ 'Planned: ' + this.formatter.format(this.startingBalance), 'Actual: ' + this.formatter.format(this.endingBalance)],
+    datasets: [
+      { data: [ 3023, 4332 ],
+        indexAxis: 'y',
+        backgroundColor: [
+          'rgba(75, 192, 192, 0.2)',
+          'rgba(255, 99, 132, 0.2)',
+        ],
+        borderColor: [
+          'rgb(75, 192, 192)',
+          'rgb(255, 99, 132)',
         ],
         borderWidth: 1},
     ]

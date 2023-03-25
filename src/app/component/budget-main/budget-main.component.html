@@ -52,6 +52,14 @@
         </mat-card-content>
     </mat-card>
     <mat-card class="example-card">
+        <mat-card-header>
+            <mat-card-title>Income - Expenses</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <canvas baseChart [data]="incomeExpensesBarChartData" [options]="barChartOptions" [plugins]="barChartPlugins" [type]="'bar'"> </canvas>
+        </mat-card-content>
+    </mat-card>
+    <mat-card class="example-card">
         <mat-card-content>
             <div>{{totalSavingsIncrease}}% Increase in Total Savings</div>
             <br>
