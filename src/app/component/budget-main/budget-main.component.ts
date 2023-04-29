@@ -1,8 +1,66 @@
-import { Component, Directive, OnInit, ViewChild } from '@angular/core';
-import { ChartConfiguration, ChartData, ChartEvent, ChartType, Legend } from 'chart.js';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChartConfiguration } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { Router } from '@angular/router';
 import { Expenses } from 'src/app/model/expenses';
+import { MatTable } from '@angular/material/table';
+import { Incomes } from 'src/app/model/income';
+import { CookieService } from 'ngx-cookie-service';
+
+export interface Categories {
+  date: string;
+  amount: string;
+  description: string;
+  category: Category;
+}
+
+export interface AmountsInterface {
+  totals: string;
+  planned: number;
+  actual: number;
+  diff: number;
+}
+
+export interface IncomesInterface {
+  totals: string;
+  planned: number;
+}
+
+enum Category {
+  empty = '',
+  rent = 'Rent',
+  food = 'Food',
+  strippers = 'Strippers'
+}
+
+const USER_DATA = [
+  { "totals": "Savings", "planned": 3600.00 },
+  { "totals": "Paycheck", "planned": 1500.00 },
+  { "totals": "Bonus", "planned": 200.00 },
+  { "totals": "Interest", "planned": 43.65 },
+  { "totals": "Other", "planned": 0.00 },
+];
+
+const COLUMNS_SCHEMA = [
+  {
+    key: "totals",
+    type: "totals",
+    label: "Totals"
+  },
+  {
+    key: "planned",
+    type: "planned",
+    label: "Planned"
+  },
+  {
+    key: "isEdit",
+    type: "isEdit",
+    label: ""
+  }
+]
+
+const EXPENSE_DATA: AmountsInterface[] = []
+const INCOME_DATA: IncomesInterface[] = []
 
 @Component({
   selector: 'app-budget-main',
@@ -11,27 +69,67 @@ import { Expenses } from 'src/app/model/expenses';
 })
 export class BudgetMainComponent implements OnInit {
   @ViewChild(BaseChartDirective) chart: BaseChartDirective | undefined;
+  @ViewChild(MatTable) table1: MatTable<AmountsInterface>;
+  @ViewChild(MatTable) table2: MatTable<AmountsInterface>;
 
   formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
   });
-  value:number = 7000;
-  startingBalance = 7000;
-  endingBalance = 8051;
-  totalSavingsIncrease = 15;
-  totalSavedMonth:string = '';
+
+  value: number = 0;
+  startingBalance = 1000;
+  endingBalance = 2000;
+  totalSavingsIncrease = 100;
+  totalSavedMonth: string = '';
+  public currentDate = new Date();
+  cookieValue: string;
+
+  expenseDisplayedColumns: string[] = ['totals', 'planned', 'actual', 'diff'];
+  expenseDataSource = EXPENSE_DATA;
+
+  incomeDisplayedColumns: string[] = ['totals', 'planned'];
+  incomeDataSource = INCOME_DATA;
+  editDataSource: any;
+  editDisplayedColumns: string[] = COLUMNS_SCHEMA.map((col) => col.key);
+  editColumnsSchema: any = COLUMNS_SCHEMA;
+  public expenses = new Expenses();
+  public incomes = new Incomes();
+
+  pushData() {
+    for (let expense of this.expenses.expenses) {
+      this.expenseDataSource.push({ totals: expense.value, planned: 10, actual: 10, diff: 10 },);
+    }
+    for (let income of this.incomes.incomes) {
+      this.incomeDataSource.push({ totals: income.value, planned: 10 },);
+    }
+    this.table1.renderRows();
+    this.table2.renderRows();
+  }
+
+  setUserData(type: string, value: any) {
+    for (let entry of this.editDataSource) {
+      if (entry.totals == type) {
+        console.log("Confirmed type:" + type);
+        entry.planned = value;
+      }
+    }
+    this.cookieService.set('user_data', JSON.stringify(this.editDataSource));
+  }
+
+  readUserData() {
+    this.editDataSource = JSON.parse(this.cookieService.get('user_data'));
+  }
 
   public barChartLegend = false;
   public barChartPlugins = [
   ];
 
-  public expenses = new Expenses();
-
   public barChartData: ChartConfiguration<'bar'>['data'] = {
-    labels: [ 'Start Balance: ' + this.formatter.format(this.startingBalance), 'End Balance: ' + this.formatter.format(this.endingBalance)],
+    labels: ['Start Balance: ' + this.formatter.format(this.startingBalance), 'End Balance: ' + this.formatter.format(this.endingBalance)],
     datasets: [
-      { data: [ 7000, 8051 ],
+      {
+        data: [this.startingBalance, this.endingBalance],
         backgroundColor: [
           'rgba(255, 99, 132, 0.2)',
           'rgba(75, 192, 192, 0.2)',
@@ -40,14 +138,16 @@ export class BudgetMainComponent implements OnInit {
           'rgb(255, 99, 132)',
           'rgb(75, 192, 192)',
         ],
-        borderWidth: 1},
+        borderWidth: 1
+      },
     ]
   };
 
   public incomeExpensesBarChartData: ChartConfiguration<'bar'>['data'] = {
-    labels: [ 'Planned: ' + this.formatter.format(this.startingBalance), 'Actual: ' + this.formatter.format(this.endingBalance)],
+    labels: ['Planned: ' + this.formatter.format(this.startingBalance), 'Actual: ' + this.formatter.format(this.endingBalance)],
     datasets: [
-      { data: [ 3023, 4332 ],
+      {
+        data: [this.startingBalance, this.endingBalance],
         indexAxis: 'y',
         backgroundColor: [
           'rgba(75, 192, 192, 0.2)',
@@ -57,7 +157,8 @@ export class BudgetMainComponent implements OnInit {
           'rgb(75, 192, 192)',
           'rgb(255, 99, 132)',
         ],
-        borderWidth: 1},
+        borderWidth: 1
+      },
     ]
   };
 
@@ -73,8 +174,8 @@ export class BudgetMainComponent implements OnInit {
     }
   };
 
-  switchPage(page:number): void {
-    switch(page){
+  switchPage(page: number): void {
+    switch (page) {
       case 0: {
         this.router.navigateByUrl('');
         break;
@@ -89,12 +190,16 @@ export class BudgetMainComponent implements OnInit {
     }
   }
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private cookieService: CookieService) {
+    this.cookieValue = JSON.parse(this.cookieService.get('user_data'));
+    console.log(this.cookieValue);
+    this.editDataSource = USER_DATA;
+    this.readUserData();
   }
 
   ngOnInit(): void {
     let saved = this.endingBalance - this.startingBalance;
     this.totalSavedMonth = this.formatter.format(saved);
+    this.pushData();
   }
 }
- 

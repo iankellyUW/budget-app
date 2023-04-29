@@ -46,6 +46,9 @@
         </mat-card-content>
     </mat-card>
     <mat-card class="example-card">
+        <mat-card-header>
+            <mat-card-title>Monthly Budget</mat-card-title>
+        </mat-card-header>
         <mat-card-content class="float-child">
             <canvas class="float-child" baseChart [data]="barChartData" [options]="barChartOptions" [plugins]="barChartPlugins" [legend]="barChartLegend" [type]="'bar'">
       </canvas>
@@ -92,7 +95,7 @@
                         </mat-form-field>
                     </mat-list-item>
                     <mat-list-item>
-                        <button color="primary" mat-icon-button [matMenuTriggerFor]="menu">
+                        <button color="primary" mat-icon-button>
               <mat-icon>done_outline</mat-icon>
             </button>
                     </mat-list-item>
@@ -100,4 +103,86 @@
             </mat-card-content>
         </mat-card>
     </div>
+    <div>
+        <mat-card class="table-card">
+            <mat-card-content>
+                <table mat-table [dataSource]="expenseDataSource" class="mat-elevation-z8 demo-table">
+                    <!-- Date Column -->
+                    <ng-container matColumnDef="totals">
+                        <th mat-header-cell *matHeaderCellDef>Totals</th>
+                        <td mat-cell *matCellDef="let element">{{element.totals}}</td>
+                    </ng-container>
+
+                    <!-- Amount Column -->
+                    <ng-container matColumnDef="planned">
+                        <th mat-header-cell *matHeaderCellDef>Planned</th>
+                        <td mat-cell *matCellDef="let element">{{element.planned}}</td>
+                    </ng-container>
+
+                    <!-- Description Column -->
+                    <ng-container matColumnDef="actual">
+                        <th mat-header-cell *matHeaderCellDef>Actual</th>
+                        <td mat-cell *matCellDef="let element">{{element.actual}}</td>
+                    </ng-container>
+
+                    <!-- Category Column -->
+                    <ng-container matColumnDef="diff">
+                        <th mat-header-cell *matHeaderCellDef>Diff</th>
+                        <td mat-cell *matCellDef="let element">{{element.diff}}</td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="expenseDisplayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: expenseDisplayedColumns;"></tr>
+                </table>
+            </mat-card-content>
+        </mat-card>
+    </div>
+    <div>
+        <mat-card class="table-card">
+            <mat-card-content>
+                <table mat-table [dataSource]="editDataSource">
+                    <ng-container [matColumnDef]="col.key" *ngFor="let col of editColumnsSchema">
+                        <th mat-header-cell *matHeaderCellDef>
+                            {{ col.label }}
+                        </th>
+                        <td mat-cell *matCellDef="let element">
+                            <div [ngSwitch]="col.type" *ngIf="!element.isEdit">
+                                <div class="btn-edit" *ngSwitchCase="'isEdit'">
+                                    <button mat-button (click)="element.isEdit = !element.isEdit">
+                              Edit
+                            </button>
+                                </div>
+                                <div *ngSwitchCase="'planned'">
+                                    {{element.planned | currency:'USD':true:'1.2-2'}}
+                                </div>
+                                <span *ngSwitchDefault>
+                            {{ element[col.key] }}
+                          </span>
+                            </div>
+                            <div [ngSwitch]="col.type" *ngIf="element.isEdit">
+                                <div class="btn-edit" *ngSwitchCase="'isEdit'">
+                                    <button mat-button (click)="element.isEdit = !element.isEdit; setUserData(element.totals, element.planned);">Done</button>
+                                </div>
+                                <div class="btn-edit" *ngSwitchCase="'totals'">
+                                    {{element.totals}}
+                                </div>
+                                <mat-form-field *ngSwitchCase="'planned'">
+                                    <input currencyMask [(ngModel)]="element.planned" [options]="{ prefix: '$ ', thousands: ',', decimal: '.', precision: 2 }" matInput/>
+                                    <button *ngIf="element.planned" matSuffix mat-icon-button aria-label="Clear" (click)="element.planned=0">
+                              <mat-icon>close</mat-icon>
+                            </button>
+                                </mat-form-field>
+                                <mat-form-field *ngSwitchDefault>
+                                    <input [type]="col.type" matInput [(ngModel)]="element[col.key]" />
+                                </mat-form-field>
+                            </div>
+                        </td>
+                    </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="editDisplayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: editDisplayedColumns"></tr>
+                </table>
+            </mat-card-content>
+        </mat-card>
+    </div>
+
 </body>

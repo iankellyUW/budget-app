@@ -16,7 +16,7 @@ export class Expenses {
         {value: 'Utilities', viewValue: 'Utilities'},
         {value: 'Travel', viewValue: 'Travel'},
         {value: 'Debt', viewValue: 'Debt'},
-        {value: 'GoingOut', viewValue: 'Going Out'},
+        {value: 'Going Out', viewValue: 'Going Out'},
         {value: 'Strippers', viewValue: 'Strippers'},
       ];
 }
