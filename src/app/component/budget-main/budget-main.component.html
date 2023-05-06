@@ -106,40 +106,6 @@
     <div>
         <mat-card class="table-card">
             <mat-card-content>
-                <table mat-table [dataSource]="expenseDataSource" class="mat-elevation-z8 demo-table">
-                    <!-- Date Column -->
-                    <ng-container matColumnDef="totals">
-                        <th mat-header-cell *matHeaderCellDef>Totals</th>
-                        <td mat-cell *matCellDef="let element">{{element.totals}}</td>
-                    </ng-container>
-
-                    <!-- Amount Column -->
-                    <ng-container matColumnDef="planned">
-                        <th mat-header-cell *matHeaderCellDef>Planned</th>
-                        <td mat-cell *matCellDef="let element">{{element.planned}}</td>
-                    </ng-container>
-
-                    <!-- Description Column -->
-                    <ng-container matColumnDef="actual">
-                        <th mat-header-cell *matHeaderCellDef>Actual</th>
-                        <td mat-cell *matCellDef="let element">{{element.actual}}</td>
-                    </ng-container>
-
-                    <!-- Category Column -->
-                    <ng-container matColumnDef="diff">
-                        <th mat-header-cell *matHeaderCellDef>Diff</th>
-                        <td mat-cell *matCellDef="let element">{{element.diff}}</td>
-                    </ng-container>
-
-                    <tr mat-header-row *matHeaderRowDef="expenseDisplayedColumns"></tr>
-                    <tr mat-row *matRowDef="let row; columns: expenseDisplayedColumns;"></tr>
-                </table>
-            </mat-card-content>
-        </mat-card>
-    </div>
-    <div>
-        <mat-card class="table-card">
-            <mat-card-content>
                 <table mat-table [dataSource]="editDataSource">
                     <ng-container [matColumnDef]="col.key" *ngFor="let col of editColumnsSchema">
                         <th mat-header-cell *matHeaderCellDef>

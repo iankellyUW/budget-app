@@ -98,7 +98,7 @@ export class BudgetMainComponent implements OnInit {
 
   pushData() {
     for (let expense of this.expenses.expenses) {
-      this.expenseDataSource.push({ totals: expense.value, planned: 10, actual: 10, diff: 10 },);
+      this.expenseDataSource.push({ totals: expense.value, planned: 10, actual: 20, diff: -10 },);
     }
     for (let income of this.incomes.incomes) {
       this.incomeDataSource.push({ totals: income.value, planned: 10 },);
@@ -110,7 +110,6 @@ export class BudgetMainComponent implements OnInit {
   setUserData(type: string, value: any) {
     for (let entry of this.editDataSource) {
       if (entry.totals == type) {
-        console.log("Confirmed type:" + type);
         entry.planned = value;
       }
     }
@@ -118,7 +117,10 @@ export class BudgetMainComponent implements OnInit {
   }
 
   readUserData() {
-    this.editDataSource = JSON.parse(this.cookieService.get('user_data'));
+    if(this.cookieService.get('user_data')!= '') {
+      console.log(this.cookieService.get('user_data'));
+      this.editDataSource = JSON.parse(this.cookieService.get('user_data'));
+    }
   }
 
   public barChartLegend = false;
@@ -191,8 +193,6 @@ export class BudgetMainComponent implements OnInit {
   }
 
   constructor(private router: Router, private cookieService: CookieService) {
-    this.cookieValue = JSON.parse(this.cookieService.get('user_data'));
-    console.log(this.cookieValue);
     this.editDataSource = USER_DATA;
     this.readUserData();
   }
