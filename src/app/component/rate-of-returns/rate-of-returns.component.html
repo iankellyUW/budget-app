@@ -1,1 +1,77 @@
-<p>rate-of-returns works!</p>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<body>
+  <mat-toolbar color="primary">
+    <button mat-icon-button [matMenuTriggerFor]="menu" class="example-icon" aria-label="Example icon-button with menu icon">
+      <mat-icon>menu</mat-icon>
+      <mat-menu #menu="matMenu">
+        <button (click)="switchPage(0)" mat-menu-item>
+          <mat-icon>insert_drive_file</mat-icon>
+          <span>Monthly Budget</span>
+        </button>
+        <button (click)="switchPage(1)" mat-menu-item>
+          <mat-icon>attach_money</mat-icon>
+          <span>Transactions</span>
+        </button>
+        <button (click)="switchPage(2)" mat-menu-item>
+          <mat-icon>timeline</mat-icon>
+          <span>Return on Investment</span>
+        </button>
+      </mat-menu>
+    </button>
+
+    <span> Return On Investment </span>
+
+  </mat-toolbar>
+
+  <mat-card class="mat-card">
+    <mat-card-header>
+      <mat-card-title>Starting Balance</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+
+      <mat-form-field>
+        <input currencyMask [(ngModel)]="value" [options]="{ prefix: '$ ', thousands: ',', decimal: '.', precision: 2 }" matInput/>
+      </mat-form-field>
+
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="chart-card">
+    <mat-card-header>
+      <mat-card-title>Return on Investment</mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="return-on-investment">
+      <canvas class="float-child" baseChart [data]="lineChartData" [options]="lineChartOptions" [type]="lineChartType">
+      </canvas>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="mat-card">
+    <mat-card-header>
+      <mat-card-title>Expected to save this year</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+
+      <mat-form-field>
+        <input currencyMask [(ngModel)]="value" [options]="{ prefix: '$ ', thousands: ',', decimal: '.', precision: 2 }" matInput/>
+      </mat-form-field>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="mat-card">
+    <mat-card-header>
+      <mat-card-title>Rate of Return</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+
+      <mat-form-field>
+        <input currencyMask [(ngModel)]="value" [options]="{ prefix: '$ ', hundreds: ',', percent: '.', precision: 2 }" matInput/>
+      </mat-form-field>
+
+    </mat-card-content>
+  </mat-card>
+
+
+
+</body>

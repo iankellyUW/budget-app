@@ -92,19 +92,23 @@ export class TransactionsMainComponent implements OnInit, AfterViewInit {
   }
 
   switchPage(page: number): void {
-    switch (page) {
-      case 0: {
-        this.router.navigateByUrl('');
-        break;
+        switch (page) {
+          case 0: {
+            this.router.navigateByUrl('');
+            break;
+          }
+          case 1: {
+            this.router.navigateByUrl('transactions');
+            break;
+          }
+          case 2: {
+              this.router.navigateByUrl('rate-of-returns');
+              break;
+          }
+          default: {
+            break;
+          }
       }
-      case 1: {
-        this.router.navigateByUrl('transactions');
-        break;
-      }
-      default: {
-        break;
-      }
-    }
   }
 
   // pushData(): void {
