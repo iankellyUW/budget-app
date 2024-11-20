@@ -17,35 +17,65 @@ export class RateOfReturnsComponent {
   });
 
   value: number = 0;
-  startingBalance = 1000;
+  startingBalance = 20000;
+  expectedSavings = 10000;
+  avgRateOfReturn = .07;
+  startingYear = new Date().getFullYear();
+  maxYears = this.startingYear + 60;
 
-  public lineChartData: ChartData<'line'> = {
-      labels: ['2025', '2026', '2027', '2028', '2029','2030', '2031', '2032', '2033', '2034', '2035'], // X-axis labels
+
+  lineChartData: ChartData<'line'> = {
+      labels: this.calculateYears(), // X-axis labels
       datasets: [
         {
-          data: [this.startingBalance, this.startingBalance*1.07, this.startingBalance*1.07*1.07, this.startingBalance*1.07*1.07*1.07,
-          this.startingBalance*1.07*1.07*1.07*1.07, this.startingBalance*1.07*1.07*1.07*1.07*1.07, this.startingBalance*1.07*1.07*1.07*1.07*1.07*1.07,
-          this.startingBalance*1.07*1.07*1.07*1.07*1.07*1.07*1.07, this.startingBalance*1.07*1.07*1.07*1.07*1.07*1.07*1.07*1.07,
-          this.startingBalance*1.07*1.07*1.07*1.07*1.07*1.07*1.07*1.07*1.07, this.startingBalance*1.07*1.07*1.07*1.07*1.07*1.07*1.07*1.07*1.07*1.07], // Y-axis data
+          data: this.calculateWealthOverTime(), // Y-axis data
           label: 'Money Over Time',
-          borderColor: 'blue', // Line color
-          backgroundColor: 'rgba(0, 0, 255, 0.3)', // Fill color
+          borderColor: 'green', // Line color
+          backgroundColor: 'rgba(178, 190, 181, 0.3)', // Fill color
         }
       ]
     };
-
-    // Chart options
-    public lineChartOptions: ChartConfiguration<'line'>['options'] = {
-      responsive: true,
-      plugins: {
-        legend: {
-          display: true
-        }
-      }
+  //Add Axis
+  lineChartOptions = {
+    responsive: true,
+    scales: {
+      x: {title: {display: true,text: 'Years'}},
+      y: {title: {display: false,text: 'Wealth'}}}
     };
 
-    // Chart type
-    public lineChartType: 'line' = 'line';
+  // Chart type
+  lineChartType: 'line' = 'line';
+
+  //for printing stuff to logs
+  //beepboop = this.calculateWealthOverTime();
+
+  // Calculate wealth over time using the formula
+  calculateWealthOverTime(): number[] {
+    const years = this.maxYears - this.startingYear;
+    const wealth: number[] = [];
+    let currentBalance = this.startingBalance;
+
+    for (let i = 1; i <= years; i++) {
+        currentBalance += this.expectedSavings;
+        currentBalance += (currentBalance * (1 + this.avgRateOfReturn));
+        wealth.push(Math.round(currentBalance));
+        console.log(`Year ${i}: ${Math.round(currentBalance)}`);
+    }
+    return wealth;
+  }
+
+  calculateYears(): number[] {
+    const years: number[] = [];
+    for (let year = this.startingYear; year <= this.maxYears; year++) {
+      years.push(year)
+    }
+    return years;
+  }
+
+  // Update the chart when input values change
+  updateChart(): void {
+    this.lineChartData.datasets[0].data = this.calculateWealthOverTime();
+  }
 
   constructor(private router: Router) {
   }

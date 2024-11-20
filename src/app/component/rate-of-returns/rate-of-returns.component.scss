@@ -52,19 +52,32 @@ html {
 .mat-card-content {
     flex-grow: 1;
     overflow: auto;
+}
+
+.inputs-container {
+    display: flex;
+    flex-direction: column;
+}
 
 .chart-card {
-    max-width: 400px;
-    max-height: 400px;
-    display: flex;
-    flex-direction: row;
-    float: none;
-    clear: both;
     margin: 10px;
+    border: 1px solid black;
 }
 
-.return-on-investment {
-  max-width: 400px;
-  max-height: 400px;
-  }
+.column-container {
+    display: flex;
+    flex-direction: row;
 }
+
+canvas {
+  width: 1200px;
+  height: auto;
+}
+
+.chart-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px;
+}
+
