@@ -1,0 +1,84 @@
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<body>
+<mat-toolbar color="primary">
+  <button mat-icon-button [matMenuTriggerFor]="menu" class="example-icon"
+          aria-label="Example icon-button with menu icon">
+    <mat-icon>menu</mat-icon>
+    <mat-menu #menu="matMenu">
+      <button (click)="switchPage(0)" mat-menu-item>
+        <mat-icon>insert_drive_file</mat-icon>
+        <span>Monthly Budget</span>
+      </button>
+      <button (click)="switchPage(1)" mat-menu-item>
+        <mat-icon>attach_money</mat-icon>
+        <span>Transactions</span>
+      </button>
+      <button (click)="switchPage(2)" mat-menu-item>
+        <mat-icon>timeline</mat-icon>
+        <span>Return on Investment</span>
+      </button>
+    </mat-menu>
+  </button>
+
+  <span> Return On Investment </span>
+
+</mat-toolbar>
+
+<div class="column-container">
+  <div class="inputs-container">
+    <!-- Input fields -->
+
+    <mat-card-header>
+      <mat-card-title>Inputs</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-card class="mat-card">Starting Balance
+        <mat-form-field>
+          <input
+            matInput
+            type="number"
+            [(ngModel)]="startingBalance"
+            (input)="updateChart()"
+          />
+        </mat-form-field>
+      </mat-card>
+
+      <mat-card class="mat-card">Expected Savings This Year
+        <mat-form-field>
+          <input
+            matInput
+            type="number"
+            [(ngModel)]="expectedSavings"
+            (input)="updateChart()"
+          />
+        </mat-form-field>
+      </mat-card>
+
+      <mat-card class="mat-card">Average Rate of Return (%)
+        <mat-form-field>
+          <input
+            matInput
+            type="number"
+            [(ngModel)]="avgRateOfReturn"
+            (input)="updateChart()"
+          />
+        </mat-form-field>
+      </mat-card>
+    </mat-card-content>
+  </div>
+
+
+  <div class="chart-container">
+    <mat-card class = chart-card>
+      <canvas
+        baseChart
+        [data]="lineChartData"
+        [options]="lineChartOptions"
+        [type]="'line'"
+      ></canvas>
+    </mat-card>
+  </div>
+</div>
+
+</body>
