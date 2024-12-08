@@ -24,6 +24,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { RateOfReturnsComponent } from './component/rate-of-returns/rate-of-returns.component';
 
 
 @NgModule({
@@ -32,6 +33,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
     BudgetMainComponent,
     TransactionsMainComponent,
     TransactionMainDialog,
+    RateOfReturnsComponent,
   ],
   imports: [
     BrowserModule,
