@@ -21,23 +21,39 @@ export class RateOfReturnsComponent {
     currency: 'USD',
   });
 
-  //---------parameters the user can change---
+  //=========parameters the user can change=============
   value: number = 0;
   age = 24;
-  maxYears = 45;
+  maxYears = 30;
   startingBalance = 20000;
-  expectedSavings = 20000;
+  expectedInvestmentsThisYear = 20000;
   avgRateOfReturn = .07;
   //Education level and additional certifications
   avgSalaryGrowth = .20
-  //(inflation + increased lifestyle)
-  avgExpensesGrowth =.025
+
+  //---------Expenses----------
+  avgExpensesGrowth =.025 //(inflation + increased lifestyle)
+
+  //---------Housing Variables--------
+  housePrice = 400000;
+  downPaymentPercent = 0.20;
+  mortgageRate = 0.065;
+  mortgageYears = 30;
+  homeAppreciationRate = 0.04;
+  propertyTaxRate = 0.01;
+  maintenanceRate = 0.01;
+  insuranceRate = 0.005; //only pops up if downPaymentPercent less than .20
+
+  //Rent
+  monthlyRent = 2000;
+  rentGrowthRate = 0.03;
+
   //----------------Advanced------------------
   //Economic conditions
   //industry and company growth
+  //=========End of editable parameters============
 
-
-  //--------------Fixed Variables based off of advanced options of user or default in () --------
+  //===============Fixed Variables based off of advanced options of user or default in ()==============
   //salary growth through entry level job (10-20%, first 5 years)
 
   //salary growth in mid level stage (3-8%, next 5 - 15 years)
@@ -63,24 +79,24 @@ export class RateOfReturnsComponent {
         {
           data: this.graphVariables.avg, // Y-axis data
           label: 'Average Returns',
-          borderColor: 'blue', // Line color
-          backgroundColor: 'rgba(0, 0, 0, 0.3)', // Fill color
-          pointRadius: 3,
+          borderColor: 'rgb(0,150,0)', // Line color
+          backgroundColor: 'rgba(0, 150, 0, 1)', // Fill color
+          pointRadius: 0,
 
         },
         {
           data: this.graphVariables.low,
-          label: 'Low End',
-          borderColor: 'red',
-          backgroundColor: 'rgba(0, 0, 0, 0.3)',
+          label: 'Low End STD',
+          borderColor: 'rgb(169,210,169)',
+          backgroundColor: 'rgba(169,210,169, 0.8)',
           pointRadius: 0,
           borderDash: [8, 5]
         },
         {
           data: this.graphVariables.high,
-          label: 'High End',
-          borderColor: 'green',
-          backgroundColor: 'rgba(0, 0, 0, 0.3)',
+          label: 'High End STD',
+          borderColor: 'rgb(169,210,169)',
+          backgroundColor: 'rgba(169,210,169, 0.8)',
           pointRadius: 0,
           borderDash: [8, 5]
         }
@@ -115,9 +131,9 @@ export class RateOfReturnsComponent {
     for (let year = 1; year <= this.maxYears; year++) {
 
 
-        const avgReturn = Math.round(((avgReturns[year - 1] * (1+averageReturn)) + this.expectedSavings) * 100) / 100;
-        const lowReturn = Math.round(((lowReturns[year -1] * (1+averageReturn - margin))+ this.expectedSavings) * 100) / 100;
-        const highReturn = Math.round(((highReturns[year - 1] * (1+averageReturn + margin)) + this.expectedSavings) * 100) / 100; //figure it out!
+        const avgReturn = Math.round(((avgReturns[year - 1] * (1+averageReturn)) + this.expectedInvestmentsThisYear) * 100) / 100;
+        const lowReturn = Math.round(((lowReturns[year -1] * (1+averageReturn - margin)) + this.expectedInvestmentsThisYear) * 100) / 100;
+        const highReturn = Math.round(((highReturns[year - 1] * (1+averageReturn + margin)) + this.expectedInvestmentsThisYear) * 100) / 100; //figure it out!
 
         years.push(this.age+year);
         avgReturns.push(avgReturn);
@@ -133,6 +149,14 @@ export class RateOfReturnsComponent {
         margin = Math.round((stdDeviation / (Math.sqrt(year)))*1000)/1000;
      }
      return {yearRange: years, low: lowReturns, high: highReturns, avg: avgReturns };
+   }
+
+   calculateMortgagePayment(): number {
+       const principal = this.housePrice * (1 - this.downPaymentPercent);
+       const monthlyRate = this.mortgageRate / 12;
+       const payments = this.mortgageYears * 12;
+       return (principal * monthlyRate * Math.pow(1 + monthlyRate, payments)) /
+              (Math.pow(1 + monthlyRate, payments) - 1);
    }
 
 //   Update the chart when input values change
@@ -157,23 +181,26 @@ export class RateOfReturnsComponent {
   constructor(private router: Router, private cdRef: ChangeDetectorRef) {}
 
   switchPage(page: number): void {
-      switch (page) {
-        case 0: {
-          this.router.navigateByUrl('');
+    switch (page) {
+      case 0: {
+        this.router.navigateByUrl('');
+        break;
+      }
+      case 1: {
+        this.router.navigateByUrl('transactions');
+        break;
+      }
+      case 2: {
+          this.router.navigateByUrl('rate-of-returns');
           break;
-        }
-        case 1: {
-          this.router.navigateByUrl('transactions');
+      }
+      case 3: {
+          this.router.navigateByUrl('buying-vs-renting');
           break;
-        }
-        case 2: {
-            this.router.navigateByUrl('rate-of-returns');
-            break;
-        }
-        default: {
+      }
+      default: {
           break;
-        }
       }
     }
-
+  }
 }

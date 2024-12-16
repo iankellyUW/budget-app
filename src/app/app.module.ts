@@ -25,6 +25,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { RateOfReturnsComponent } from './component/rate-of-returns/rate-of-returns.component';
+import { BuyingVsRentingComponent } from './component/buying-vs-renting/buying-vs-renting.component';
 
 
 @NgModule({
@@ -34,6 +35,7 @@ import { RateOfReturnsComponent } from './component/rate-of-returns/rate-of-retu
     TransactionsMainComponent,
     TransactionMainDialog,
     RateOfReturnsComponent,
+    BuyingVsRentingComponent,
   ],
   imports: [
     BrowserModule,
