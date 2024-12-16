@@ -23,32 +23,37 @@ export class BuyingVsRentingComponent {
     currency: 'USD',
   });
 
-  // Time Variables
-  age = 24;
-  mortgageYears = 15;
-
   // Savings variables
+  age = 24;
   startingBalance = 40000;
   expectedInvestmentsThisYear = 20000;
   avgRateOfReturn = .07;
+  annualIncome = 100000;
   avgSalaryGrowth = .05;
+  annualExpenses = 45000;
   rateOfInflation = .025;
+  taxRate = .25; //Marginal tax rate for deductions
+
 
   // Housing variables
-  housePrice = 100000;
+  housePrice = 500000;
   downPaymentPercent = 0.20;
+  mortgageYears = 30;
+
   // Growth
-  homeAppreciationRate = 0.00;
+  homeAppreciationRate = 0.05;
+  housingAppreciationStdDev = .03;
+
   // Housing Expenses
   maintenanceRate = 0.01;
   propertyTaxRate = 0.01;
   mortgageRate = 0.065;
+    //Tax stuff
     selectedCreditScore: string = '780';
     selectedDownPaymentRange: string = '30';
     rateAdjustment = 0;
   insuranceRate = 0.005;
-  housingStandardDeviation = .03;
-  taxRate = .25; //Marginal tax rate for deductions
+
   // One time costs
   closingCostRate = .03;
   sellingCostRate = .06; //For future implementation of swapping homes throughout life phases
@@ -56,6 +61,7 @@ export class BuyingVsRentingComponent {
   // Renting Expenses
   monthlyRent = 2000;
   rentGrowthRate = 0.03;
+  rentingStdDev = .15;
 
   // Tax deduction constants
   readonly SALT_DEDUCTION_LIMIT = 10000; // $10,000 SALT deduction limit
@@ -128,97 +134,136 @@ export class BuyingVsRentingComponent {
   }
 
   calculateHousingScenarios(averageReturn: number, initialInvestment: number, stdDeviation: number): {
-    yearRange: number[],
-    renting: number[],
-    buying: number[]
+      yearRange: number[],
+      renting: number[],
+      rentingUpperBound: number[],
+      rentingLowerBound: number[],
+      buying: number[],
+      buyingUpperBound: number[],
+      buyingLowerBound: number[],
+      homeEquity: number[],
+      homePrice: number[]
     }
     {
-    // Returned Data
-    const yearRange: number[] = [];
-    const rentingWealth: number[] = [];
-    const buyingWealth: number[] = [];
-    //Separately track for buying wealth
-    const buyingInvestmentReturns: number[] = [];
-    const homeEquityTracker: number[] = [];
+      const yearRange: number[] = [];
+      const rentingWealth: number[] = [];
+      const rentingUpperBound: number[] = [];
+      const rentingLowerBound: number[] = [];
+      const buyingWealth: number[] = [];
+      const buyingUpperBound: number[] = [];
+      const buyingLowerBound: number[] = [];
+      const buyingInvestmentReturns: number[] = [];
+      const homeEquityTracker: number[] = [];
+      const homePriceTracker: number[] = [];
 
-    // Initial setup
-    const downPayment = this.housePrice * this.downPaymentPercent;
-    const monthlyMortgage = this.calculateMortgagePayment();
-    const initialRentingBalance = initialInvestment;
-    const initialBuyingBalance = initialInvestment - downPayment;
-    const initialEquity = downPayment - initialInvestment * this.closingCostRate;
 
-    let currentHouseValue = this.housePrice;
-    let currentRent = this.monthlyRent;
-    let remainingMortgage = this.roundToHundredths(this.housePrice * (1 - this.downPaymentPercent));
-    let maintenanceCost = this.roundToHundredths(this.housePrice * this.maintenanceRate);  // Initial maintenance cost
-    let currentYearInvestment = this.expectedInvestmentsThisYear;
-    let annualRent = this.monthlyRent * 12;
+      const downPayment = this.housePrice * this.downPaymentPercent;
+      const monthlyMortgage = this.calculateMortgagePayment();
+      const initialRentingBalance = initialInvestment;
+      const initialBuyingBalance = initialInvestment - downPayment;
+      const initialEquity = downPayment - initialInvestment * this.closingCostRate;
 
-    yearRange.push(this.age);
-    rentingWealth.push(initialRentingBalance);
-    buyingInvestmentReturns.push(initialBuyingBalance - initialInvestment * this.closingCostRate);
-    homeEquityTracker.push(initialEquity);
-    buyingWealth.push(buyingInvestmentReturns[0] + homeEquityTracker[0]);
 
-    for (let year = 1; year <= this.mortgageYears; year++) {
-      // Update house value
-      currentHouseValue *= this.roundToHundredths(1 + this.homeAppreciationRate);
-      // Update maintenance cost with inflation rather than house appreciation
-      maintenanceCost *= this.roundToThousandth(1 + this.rateOfInflation);
-      // Update investment amount with salary growth
-      currentYearInvestment *= (1 + this.avgSalaryGrowth);
-      // Update rent
-      currentRent *= (1 + this.rentGrowthRate);
-      annualRent = this.roundToHundredths(currentRent * 12);
+      let currentIncome = this.annualIncome;
+      let afterTaxIncome = currentIncome * (1 - this.taxRate);
+      let annualMortgage = this.roundToHundredths(monthlyMortgage * 12);
+      let currentHouseValue = this.housePrice;
+      let remainingMortgage = this.roundToHundredths(this.housePrice * (1 - this.downPaymentPercent));
+      let maintenanceCost = this.roundToHundredths(this.housePrice * this.maintenanceRate);
+      let currentRent = this.monthlyRent;
+      let currentYearInvestment = this.expectedInvestmentsThisYear;
+      let annualRent = this.monthlyRent * 12;
+      let annualExpenses = this.annualExpenses;
 
-      // Calculate mortgage components
-      const annualMortgage = this.roundToHundredths(monthlyMortgage * 12);
-      const interestPayment = this.roundToHundredths(remainingMortgage * this.mortgageRate);
-      const principalPayment = this.roundToHundredths(annualMortgage - interestPayment);
+      yearRange.push(this.age);
+      rentingWealth.push(initialRentingBalance);
+      rentingUpperBound.push(initialRentingBalance);
+      rentingLowerBound.push(initialRentingBalance);
 
-      // Calculate annual housing costs
-      const propertyTax = this.roundToHundredths(currentHouseValue * this.propertyTaxRate);
-      const insurance = this.roundToHundredths(currentHouseValue * this.insuranceRate);
-      const totalHomeownerCosts = this.roundToHundredths(annualMortgage + propertyTax + maintenanceCost + insurance + interestPayment);
+      homePriceTracker.push(this.housePrice);
+      homeEquityTracker.push(initialEquity);
+      buyingInvestmentReturns.push(initialBuyingBalance - initialInvestment * this.closingCostRate);
+      buyingWealth.push(buyingInvestmentReturns[0] + homeEquityTracker[0]);
+      buyingUpperBound.push(buyingWealth[0]);
+      buyingLowerBound.push(buyingWealth[0]);
 
-      // Calculate wealth for renting scenario
-      const rentingInvestmentsReturn = this.roundToHundredths(rentingWealth[year - 1] * (1 + averageReturn) + currentYearInvestment);
-      rentingWealth.push(rentingInvestmentsReturn);
+      for (let year = 1; year <= 45; year++) {
+        // Update income and expenses with growth rates
+        currentIncome *= (1 + this.avgSalaryGrowth);
+        afterTaxIncome = currentIncome * (1 - this.taxRate);
+        annualExpenses *= (annualExpenses * this.rateOfInflation);
 
-      // Calculate wealth for buying scenario
-      const buyingCurrentYearInvestments = this.roundToHundredths(currentYearInvestment - totalHomeownerCosts + annualRent/3);
+        // Update housing-related variables
+        currentHouseValue *= this.roundToHundredths(1 + this.homeAppreciationRate);
+        maintenanceCost *= this.roundToThousandth(1 + this.rateOfInflation);
+        currentYearInvestment *= (1 + this.avgSalaryGrowth);
+        currentRent *= (1 + this.rentGrowthRate);
+        annualRent = this.roundToHundredths(currentRent * 12);
 
-      // Calculate investment returns separately from home equity
-      const buyingInvestmentReturn = this.roundToHundredths(buyingInvestmentReturns[year - 1] * (1 + averageReturn) + buyingCurrentYearInvestments);
-      buyingInvestmentReturns.push(buyingInvestmentReturn);
+        //Seperate annual mortgage into interest and principalPayment
+        if (remainingMortgage < 0) {
+            annualMortgage = 0;
+        }
+        const interestPayment = this.roundToHundredths(remainingMortgage * this.mortgageRate);
+        const principalPayment = this.roundToHundredths(annualMortgage - interestPayment);
+        const propertyTax = this.roundToHundredths(currentHouseValue * this.propertyTaxRate);
+        const insurance = this.roundToHundredths(currentHouseValue * this.insuranceRate);
+        const totalHomeownerCosts = this.roundToHundredths(annualMortgage + propertyTax + maintenanceCost + insurance);
 
-      // Update remaining mortgage
-      remainingMortgage -= principalPayment;
+        // Calculate available money for investments
+        const rentingAvailableForInvestment = this.roundToHundredths(afterTaxIncome - (annualExpenses + annualRent));
+        const buyingAvailableForInvestment = this.roundToHundredths(afterTaxIncome - (annualExpenses + totalHomeownerCosts));
 
-      // Calculate home equity
-      const homeEquity = this.roundToHundredths(currentHouseValue - remainingMortgage);
-      homeEquityTracker.push(homeEquity);
+        // Calculate investment returns with available money
+        const rentingInvestmentsReturn = this.roundToHundredths(rentingWealth[year - 1] * (1 + averageReturn) + rentingAvailableForInvestment);
+        const buyingInvestmentReturn = this.roundToHundredths(buyingInvestmentReturns[year - 1] * (1 + averageReturn) + buyingAvailableForInvestment);
 
-      // Total wealth is investments plus home equity
-      buyingWealth.push(buyingInvestmentReturn + homeEquity);
+        // Using square root of time to reflect decreasing volatility over time
+        const investmentReturnTimeAdjustedStdDev = stdDeviation / Math.sqrt(year);
+        const buyingTimeAdjustedStdDev = this.housingAppreciationStdDev / Math.sqrt(year);
 
-      yearRange.push(this.age + year);
+        // Calculate renting bounds with time-adjusted standard deviation
+        const rentingStdDev = Math.abs(rentingInvestmentsReturn * investmentReturnTimeAdjustedStdDev);
+        const rentingUpper = rentingInvestmentsReturn + rentingStdDev;
+        const rentingLower = rentingInvestmentsReturn - rentingStdDev;
 
-      console.log(year);
-      console.log("totalHomeownerCosts: " + totalHomeownerCosts);
-      console.log("principalPayments: " + principalPayment)
-      console.log("buyingWealth: " + this.roundToHundredths(buyingInvestmentReturn + homeEquity) + " buyingInvestments : " + buyingInvestmentReturn + " homeEquity: " + homeEquity);
-      console.log("rentingWeatlh: " + rentingInvestmentsReturn);
+        // Update remaining mortgage and home equity
+        remainingMortgage -= principalPayment;
+        const homeEquity = this.roundToThousandth(currentHouseValue - remainingMortgage);
+        const buyingTotalWealth = buyingInvestmentReturn + homeEquity;
+
+        // Calculate buying bounds with time-adjusted standard deviation
+        const buyingStdDev = Math.abs(buyingTotalWealth * buyingTimeAdjustedStdDev);
+        const buyingUpper = buyingTotalWealth + buyingStdDev;
+        const buyingLower = buyingTotalWealth - buyingStdDev;
+
+        // Store values
+          yearRange.push(this.age + year);
+          rentingWealth.push(this.roundToHundredths(rentingInvestmentsReturn));
+          rentingUpperBound.push(this.roundToHundredths(rentingUpper));
+          rentingLowerBound.push(this.roundToHundredths(rentingLower));
+          buyingInvestmentReturns.push(this.roundToHundredths(buyingInvestmentReturn));
+          homeEquityTracker.push(this.roundToHundredths(homeEquity));
+          homePriceTracker.push(this.roundToHundredths(currentHouseValue));
+          buyingWealth.push(this.roundToHundredths(buyingTotalWealth));
+          buyingUpperBound.push(this.roundToHundredths(buyingUpper));
+          buyingLowerBound.push(this.roundToHundredths(buyingLower));
+        }
+
+        return {
+          yearRange,
+          renting: rentingWealth,
+          rentingUpperBound,
+          rentingLowerBound,
+          buying: buyingWealth,
+          buyingUpperBound,
+          buyingLowerBound,
+          homeEquity: homeEquityTracker,
+          homePrice: homePriceTracker
+      };
     }
 
-    return {
-      yearRange,
-      renting: rentingWealth,
-      buying: buyingWealth
-    };
-  }
-
+  // Exhibit 19 buying grid
   private readonly rateGrid: { [key: string]: { [key: string]: number } } = {
       '780': { '70': 0.000, '40': 0.000, '30': 0.000, '25': 0.000, '20': 0.375, '15': 0.375, '10': 0.250, '5': 0.250, '0': 0.125 },
       '760': { '70': 0.000, '40': 0.000, '30': 0.000, '25': 0.250, '20': 0.625, '15': 0.625, '10': 0.500, '5': 0.500, '0': 0.250 },
@@ -230,67 +275,131 @@ export class BuyingVsRentingComponent {
       '640': { '70': 0.000, '40': 0.000, '30': 1.125, '25': 1.500, '20': 2.250, '15': 2.500, '10': 2.000, '5': 1.875, '0': 1.500 },
       '620': { '70': 0.000, '40': 0.125, '30': 1.500, '25': 2.125, '80': 2.750, '85': 2.875, '10': 2.625, '5': 2.250, '0': 1.750 }
     };
-
     updateRate() {
       this.rateAdjustment = this.rateGrid[this.selectedCreditScore][this.selectedDownPaymentRange];
       this.mortgageRate += this.rateAdjustment/100
       this.downPaymentPercent = this.rateGrid[this.selectedCreditScore][this.selectedDownPaymentRange];
       this.rateChange.emit(this.rateAdjustment);
-
-  }
-
-  roundToHundredths(num: number): number{
-    return (Math.round(num*100)/100);
-  }
-
-  roundToThousandth(num: number): number{
-      return (Math.round(num*1000)/1000);
   }
 
   lineChartData: ChartData<'line'> = {
-    labels: this.housingScenarios.yearRange,
-    datasets: [
-      {
-        data: this.housingScenarios.renting,
-        label: 'Renting + Investing',
-        borderColor: 'purple',
-        backgroundColor: 'purple',
-        pointRadius: 0,
-      },
-      {
-        data: this.housingScenarios.buying,
-        label: 'Home Ownership',
-        borderColor: 'orange',
-        backgroundColor: 'orange',
-        pointRadius: 0,
-      }
-    ]
+      labels: this.housingScenarios.yearRange,
+      datasets: [
+        {
+          data: this.housingScenarios.renting,
+          label: 'Renting + Investing',
+          borderColor: 'purple',
+          backgroundColor: 'purple',
+          pointRadius: 0,
+        },
+        {
+          data: this.housingScenarios.rentingUpperBound,
+          label: '',
+          borderColor: 'rgba(128, 0, 128, 0.3)',
+          backgroundColor: 'rgba(128, 0, 128, 0.1)',
+          pointRadius: 0,
+          borderDash: [5, 5],
+          fill: false
+        },
+        {
+          data: this.housingScenarios.rentingLowerBound,
+          label: '',
+          borderColor: 'rgba(128, 0, 128, 0.3)',
+          backgroundColor: 'rgba(128, 0, 128, 0.1)',
+          pointRadius: 0,
+          borderDash: [5, 5],
+          fill: false
+        },
+        {
+          data: this.housingScenarios.buying,
+          label: 'Home Ownership',
+          borderColor: 'orange',
+          backgroundColor: 'orange',
+          pointRadius: 0,
+        },
+        {
+          data: this.housingScenarios.buyingUpperBound,
+          label: undefined,
+          borderColor: 'rgba(255, 165, 0, 0.3)',
+          backgroundColor: 'rgba(255, 165, 0, 0.1)',
+          pointRadius: 0,
+          borderDash: [5, 5],
+          fill: false,
+          showLine: true,
+//           display: false
+        },
+        {
+          data: this.housingScenarios.buyingLowerBound,
+          label: undefined,
+          borderColor: 'rgba(255, 165, 0, 0.3)',
+          backgroundColor: 'rgba(255, 165, 0, 0.1)',
+          pointRadius: 0,
+          borderDash: [5, 5],
+          fill: false,
+          showLine: true,
+//           display: false
+        },
+        {
+          data: this.housingScenarios.homeEquity,
+          label: 'Home Equity',
+          borderColor: 'green',
+          backgroundColor: 'green',
+          pointRadius: 0,
+          borderDash: [7, 7],
+          fill: false,
+          showLine: true,
+//           display: false
+        },
+        {
+          data: this.housingScenarios.homePrice,
+          label: 'Home Appreciation',
+          borderColor: 'blue',
+          backgroundColor: 'blue',
+          borderDash: [7, 7],
+          pointRadius: 0,
+        }
+      ]
   };
 
   lineChartOptions = {
-      responsive: true,
-      scales: {
-        x: {title: {display: true,text: 'Age'}},
-        y: {title: {display: false,text: 'Wealth'}}}
+    responsive: true,
+    scales: {
+      x: {title: {display: true, text: 'Age'}},
+      y: {title: {display: false, text: 'Wealth'}}
+    },
+    plugins: {
+      legend: {
+        labels: {
+          filter: (legendItem: { text: string }): boolean => {
+            const visibleLabels = ['Renting + Investing', 'Home Ownership', 'Home Equity', 'Home Appreciation'];
+            return visibleLabels.indexOf(legendItem.text) !== -1;
+          }
+        }
+      }
+    }
   };
 
-  lineChartType: 'line' = 'line';
-
   updateChart(): void {
-    this.housingScenarios = this.calculateHousingScenarios(this.avgRateOfReturn, this.startingBalance, .15);
+      this.housingScenarios = this.calculateHousingScenarios(this.avgRateOfReturn, this.startingBalance, .15);
 
-    this.lineChartData.labels = this.housingScenarios.yearRange;
-    this.lineChartData.datasets[0].data = this.housingScenarios.renting;
-    this.lineChartData.datasets[1].data = this.housingScenarios.buying;
-
-    this.cdRef.detectChanges();
-    if (this.chart?.chart) {
-      this.chart.chart.update();
-    }
+      this.lineChartData.labels = this.housingScenarios.yearRange;
+      this.lineChartData.datasets[0].data = this.housingScenarios.renting;
+      this.lineChartData.datasets[1].data = this.housingScenarios.rentingUpperBound;
+      this.lineChartData.datasets[2].data = this.housingScenarios.rentingLowerBound;
+      this.lineChartData.datasets[3].data = this.housingScenarios.buying;
+      this.lineChartData.datasets[4].data = this.housingScenarios.buyingUpperBound;
+      this.lineChartData.datasets[5].data = this.housingScenarios.buyingLowerBound;
+      this.lineChartData.datasets[6].data = this.housingScenarios.homeEquity;
+      this.lineChartData.datasets[7].data = this.housingScenarios.homePrice;
+      this.cdRef.detectChanges();
+      if (this.chart?.chart) {
+        this.chart.chart.update();
+      }
   }
 
   constructor(private router: Router, private cdRef: ChangeDetectorRef) {}
 
+  //URL Navigator
   switchPage(page: number): void {
     switch (page) {
       case 0: {
@@ -314,4 +423,14 @@ export class BuyingVsRentingComponent {
       }
     }
   }
+
+  //Utilities
+  roundToHundredths(num: number): number{
+      return (Math.round(num*100)/100);
+  }
+
+  roundToThousandth(num: number): number{
+      return (Math.round(num*1000)/1000);
+  }
+
 }

@@ -21,7 +21,7 @@
     "useDefineForClassFields": false,
     "strictPropertyInitialization": false,
     "lib": [
-      "ES2015",
+      "ES2016",
       "dom"
     ]
   },
