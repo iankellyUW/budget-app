@@ -25,24 +25,14 @@ export class RateOfReturnsComponent {
   value: number = 0;
   age = 24;
   maxYears = 30;
-  startingBalance = 20000;
-  expectedInvestmentsThisYear = 20000;
+  startingBalance = 1000000;
+  expectedInvestmentsThisYear = 1000000;
   avgRateOfReturn = .07;
-  //Education level and additional certifications
+  //Education level and additional certifications (TO BE ADDED)
   avgSalaryGrowth = .20
 
   //---------Expenses----------
   avgExpensesGrowth =.025 //(inflation + increased lifestyle)
-
-  //---------Housing Variables--------
-  housePrice = 400000;
-  downPaymentPercent = 0.20;
-  mortgageRate = 0.065;
-  mortgageYears = 30;
-  homeAppreciationRate = 0.04;
-  propertyTaxRate = 0.01;
-  maintenanceRate = 0.01;
-  insuranceRate = 0.005; //only pops up if downPaymentPercent less than .20
 
   //Rent
   monthlyRent = 2000;
@@ -114,7 +104,7 @@ export class RateOfReturnsComponent {
   lineChartType: 'line' = 'line';
 
   //-----------------for printing stuff to logs--------------------
-//   beepboop: {yearRange: number[]; low: number[]; high: number[], avg: number []} = this.calculateReturns(this.avgRateOfReturn,this.startingBalance,.15);
+  //beepboop: {yearRange: number[]; low: number[]; high: number[], avg: number []} = this.calculateReturns(this.avgRateOfReturn,this.startingBalance,.15);
 
   calculateReturns(averageReturn: number,initialInvestment: number, stdDeviation: number): {yearRange: number[], low: number[], high: number[], avg: number[]} {
     const lowReturns: number [] = [];
@@ -129,8 +119,6 @@ export class RateOfReturnsComponent {
     highReturns.push(initialInvestment)
 
     for (let year = 1; year <= this.maxYears; year++) {
-
-
         const avgReturn = Math.round(((avgReturns[year - 1] * (1+averageReturn)) + this.expectedInvestmentsThisYear) * 100) / 100;
         const lowReturn = Math.round(((lowReturns[year -1] * (1+averageReturn - margin)) + this.expectedInvestmentsThisYear) * 100) / 100;
         const highReturn = Math.round(((highReturns[year - 1] * (1+averageReturn + margin)) + this.expectedInvestmentsThisYear) * 100) / 100; //figure it out!
@@ -151,15 +139,7 @@ export class RateOfReturnsComponent {
      return {yearRange: years, low: lowReturns, high: highReturns, avg: avgReturns };
    }
 
-   calculateMortgagePayment(): number {
-       const principal = this.housePrice * (1 - this.downPaymentPercent);
-       const monthlyRate = this.mortgageRate / 12;
-       const payments = this.mortgageYears * 12;
-       return (principal * monthlyRate * Math.pow(1 + monthlyRate, payments)) /
-              (Math.pow(1 + monthlyRate, payments) - 1);
-   }
-
-//   Update the chart when input values change
+  // Update the chart when input values change
   updateChart(): void {
     this.graphVariables = this.calculateReturns(this.avgRateOfReturn, this.startingBalance, .15);
     console.log("updateChart triggered ")

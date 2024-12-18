@@ -3,46 +3,19 @@ html {
     font-family: 'Roboto';
 }
 
-.top-card {
-    max-width: auto;
-    margin: 10px;
-}
-
-.example-card {
-    max-width: 400px;
-    margin: 10px;
-    display: flex;
-    float: left;
-}
-
-.expense-card {
-    margin: 10px;
-}
-
+.top-card,
+.example-card,
+.expense-card,
+.table-card,
 .float-container {
-    border: 3px solid #fff;
-    padding: 20px;
-}
-
-.float-child {
-    max-width: 300px;
-    margin-bottom: 50px;
-    float: left;
+    margin: 10px;
 }
 
 .mat-card {
-    max-width: 250px;
     display: flex;
     flex-direction: column;
-    float: none;
-    clear: both;
     margin: 10px;
-}
-
-.table-card {
-    float: left;
-    max-width: 20%;
-    margin: 10px;
+    max-width: 250px;
 }
 
 .mat-card-content {
@@ -50,22 +23,29 @@ html {
     overflow: auto;
 }
 
+.column-container {
+    display: flex;
+    padding: 20px;
+    height: calc(100vh - 64px); /* Subtracting the toolbar height */
+    overflow: hidden;
+    justify-content: space-between; /* Ensure even spacing between inputs and chart */
+}
+
 .inputs-container {
     display: flex;
     flex-direction: column;
-    max-width: 270px; /* Slightly wider to accommodate the cards with margins */
-    float: left;
+    max-width: 270px; /* Slightly wider to accommodate cards */
+    margin-right: 20px; /* Add space between inputs and chart */
+    flex-shrink: 0; /* Prevent shrinking */
 }
 
-/* Updated chart styling */
 .chart-container {
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Changed to flex-start to align with inputs */
-    margin: 20px;
+    align-items: flex-start;
+    flex-grow: 1; /* Make chart container take remaining space */
     height: calc(100vh - 104px); /* Viewport height minus toolbar and margins */
-    width: calc(100% - 290px); /* Full width minus inputs container width */
-    float: left;
+    min-width: 0; /* Prevent overflow */
 }
 
 .chart-card {
@@ -82,41 +62,41 @@ canvas {
     max-height: calc(100vh - 134px); /* Account for card padding */
 }
 
-/* Additional useful styles */
-.column-container {
-    display: flex;
-    padding: 20px;
-    height: calc(100vh - 64px); /* Subtract toolbar height */
-    overflow: hidden;
-}
-
-/* Make inputs more compact */
+/* Inputs styling */
 mat-form-field {
-  .mat-form-field-wrapper {
-    padding-bottom: 0;
-    margin: 0;
-  }
-
-  .mat-form-field-underline {
-    bottom: 0;
-  }
-
-  .mat-form-field-infix {
-    padding: 0.5em 0;
-    border-top: 0.35em solid transparent;
-  }
-}
-
-small {
-  color: rgba(0,0,0,0.6);
-  font-size: 12px;
+    margin-bottom: 8px;
 }
 
 .mat-card-title {
-  margin-bottom: 0 !important;
+    margin-bottom: 0 !important;
 }
 
 .mat-card-header {
-  padding: 8px 8px 0 8px;
+    padding: 8px 8px 0 8px;
 }
 
+.grid-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.rate-display {
+    background-color: #f5f5f5;
+    text-align: center;
+}
+
+/* Make inputs more compact */
+mat-form-field .mat-form-field-wrapper {
+    padding-bottom: 0;
+    margin: 0;
+}
+
+.mat-form-field-underline {
+    bottom: 0;
+}
+
+.mat-form-field-infix {
+    padding: 0.5em 0;
+    border-top: 0.35em solid transparent;
+}

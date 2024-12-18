@@ -2,8 +2,7 @@
 
 <body>
 <mat-toolbar color="primary">
-  <button mat-icon-button [matMenuTriggerFor]="menu" class="example-icon"
-          aria-label="Example icon-button with menu icon">
+  <button mat-icon-button [matMenuTriggerFor]="menu" class="example-icon" aria-label="Example icon-button with menu icon">
     <mat-icon>menu</mat-icon>
     <mat-menu #menu="matMenu">
       <button (click)="switchPage(0)" mat-menu-item>
@@ -24,195 +23,181 @@
       </button>
     </mat-menu>
   </button>
-
-  <span> Buying vs Renting </span>
+  <span>Buying vs Renting</span>
 </mat-toolbar>
 
 <div class="column-container">
+  <!-- Inputs Section -->
   <div class="inputs-container">
-    <!-- General Inputs -->
-    <mat-card>
+    <mat-card class="mat-card">
       <mat-card-header>
-        <mat-card-title>General Inputs</mat-card-title>
+        <mat-card-title>Buyer Inputs</mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <mat-card class="mat-card">Starting Balance
           <mat-form-field>
-            <input
-              matInput
-              type="number"
-              [(ngModel)]="startingBalance"
-              (input)="updateChart()"
-            />
+            <input matInput type="number" [(ngModel)]="startingBalance" (input)="updateChart()" step="20000" />
           </mat-form-field>
         </mat-card>
 
         <mat-card class="mat-card">Expected Investments This Year
           <mat-form-field>
-            <input
-              matInput
-              type="number"
-              [(ngModel)]="expectedInvestmentsThisYear"
-              (input)="updateChart()"
-              step = "250"
-            />
-          </mat-form-field>
-        </mat-card>
-
-        <mat-card class="mat-card">Average Rate of Return (%)
-          <mat-form-field>
-            <input
-              matInput
-              type="number"
-              [(ngModel)]="avgRateOfReturn"
-              (input)="updateChart()"
-              step = ".001"
-            />
+            <input matInput type="number" [(ngModel)]="expectedInvestmentsThisYear" (input)="updateChart()" step="250" />
           </mat-form-field>
         </mat-card>
       </mat-card-content>
     </mat-card>
 
+    <mat-card class="mat-card">
+      <mat-card-header>
+        <mat-card-title>Mortgage Rate Adjustment Grid</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="grid-container">
+          <mat-form-field>
+            <mat-label>Credit Score Range</mat-label>
+            <mat-select [(value)]="selectedCreditScore" (selectionChange)="updateRate()">
+              <mat-option value="780">≥ 780</mat-option>
+              <mat-option value="760">760-779</mat-option>
+              <mat-option value="740">740-759</mat-option>
+              <mat-option value="720">720-739</mat-option>
+              <mat-option value="700">700-719</mat-option>
+              <mat-option value="680">680-699</mat-option>
+              <mat-option value="660">660-679</mat-option>
+              <mat-option value="640">640-659</mat-option>
+              <mat-option value="620">< 640</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Down payment %</mat-label>
+            <mat-select [(value)]="selectedDownPaymentRange" (selectionChange)="[updateRate(), updateChart()]">
+              <mat-option value="70">≤ 70%</mat-option>
+              <mat-option value="40">> 70% & ≤ 40%</mat-option>
+              <mat-option value="30">> 40% & ≤ 30%</mat-option>
+              <mat-option value="25">> 30% & ≤ 25%</mat-option>
+              <mat-option value="20">> 25% & ≤ 20%</mat-option>
+              <mat-option value="15">> 20% & ≤ 15%</mat-option>
+              <mat-option value="10">> 15% & ≤ 10%</mat-option>
+              <mat-option value="5">> 10% & ≤ 5%</mat-option>
+              <mat-option value="0">> 5%</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-card class="rate-display">
+            <mat-card-content>
+              <p>Rate Adjustment: +{{ rateAdjustment }}%</p>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
     <!-- House Purchase Inputs -->
-    <mat-card>
+    <mat-card class="mat-card">
       <mat-card-header>
         <mat-card-title>House Purchase Details</mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <mat-card class="mat-card">House Price
           <mat-form-field>
-            <input
-              matInput
-              type="number"
-              [(ngModel)]="housePrice"
-              (input)="updateChart()"
-              step = "50000"
-            />
+            <input matInput type="number" [(ngModel)]="housePrice" (input)="updateChart()" step="50000" />
           </mat-form-field>
         </mat-card>
 
-        <mat-card class="mat-card">Down Payment (%)
-          <mat-form-field>
-            <input
-              matInput
-              type="number"
-              [(ngModel)]="downPaymentPercent"
-              (input)="updateChart()"
-              step="0.01"
-            />
-          </mat-form-field>
+        <mat-card class="mat-card">
+          <div style="display: flex; justify-content: space-between; align-items: center">
+            <div>Down Payment (%)
+              <mat-form-field>
+                <input matInput type="number" [(ngModel)]="downPaymentPercent" (input)="updateChart()" step="0.01" />
+              </mat-form-field>
+            </div>
+            <div>
+              <mat-card class="mat-card">
+                <mat-card-title class="mat-header">Down Payment</mat-card-title>
+                {{ formatter.format(housePrice * downPaymentPercent) }}
+              </mat-card>
+            </div>
+          </div>
         </mat-card>
 
         <mat-card class="mat-card">Mortgage Rate (%)
           <mat-form-field>
-            <input
-              matInput
-              type="number"
-              [(ngModel)]="mortgageRate"
-              (input)="updateChart()"
-              step="0.001"
-            />
+            <input matInput type="number" [(ngModel)]="mortgageRate" (input)="updateChart()" step="0.001" />
           </mat-form-field>
         </mat-card>
 
         <mat-card class="mat-card">Mortgage Term (Years)
           <mat-form-field>
-            <input
-              matInput
-              type="number"
-              [(ngModel)]="mortgageYears"
-              (input)="updateChart()"
-            />
+            <input matInput type="number" [(ngModel)]="mortgageYears" (input)="updateChart()" />
           </mat-form-field>
         </mat-card>
       </mat-card-content>
     </mat-card>
 
     <!-- Rental Inputs -->
-    <mat-card>
+    <mat-card class="mat-card">
       <mat-card-header>
         <mat-card-title>Rental Details</mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <mat-card class="mat-card">Monthly Rent
           <mat-form-field>
-            <input
-              matInput
-              type="number"
-              [(ngModel)]="monthlyRent"
-              (input)="updateChart()"
-              step = "50"
-            />
+            <input matInput type="number" [(ngModel)]="monthlyRent" (input)="updateChart()" step="50" />
           </mat-form-field>
         </mat-card>
 
         <mat-card class="mat-card">Rent Growth Rate (%)
           <mat-form-field>
-            <input
-              matInput
-              type="number"
-              [(ngModel)]="rentGrowthRate"
-              (input)="updateChart()"
-              step="0.001"
-            />
-          </mat-form-field>
-        </mat-card>
-      </mat-card-content>
-    </mat-card>
-
-    <!-- Market Assumptions -->
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>Market Assumptions</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <mat-card class="mat-card">Property Tax Rate (%)
-          <mat-form-field>
-            <input
-              matInput
-              type="number"
-              [(ngModel)]="propertyTaxRate"
-              (input)="updateChart()"
-              step="0.001"
-            />
-          </mat-form-field>
-        </mat-card>
-
-        <mat-card class="mat-card">Maintenance Rate (%)
-          <mat-form-field>
-            <input
-              matInput
-              type="number"
-              [(ngModel)]="maintenanceRate"
-              (input)="updateChart()"
-              step="0.001"
-            />
-          </mat-form-field>
-        </mat-card>
-
-        <mat-card class="mat-card">Home Appreciation Rate (%)
-          <mat-form-field>
-            <input
-              matInput
-              type="number"
-              [(ngModel)]="homeAppreciationRate"
-              (input)="updateChart()"
-              step="0.001"
-            />
+            <input matInput type="number" [(ngModel)]="rentGrowthRate" (input)="updateChart()" step="0.001" />
           </mat-form-field>
         </mat-card>
       </mat-card-content>
     </mat-card>
   </div>
 
+  <!-- Right Column for Rate of Return and Market Assumptions -->
+  <div style="flex: 1; display: flex; justify-content: space-between; margin-left: 20px;">
+    <div style="flex: 1; margin-right: 10px;">
+      <mat-card class="mat-card">Average Rate of Return (%)
+        <mat-form-field>
+          <input matInput type="number" [(ngModel)]="avgRateOfReturn" (input)="updateChart()" step=".001" />
+        </mat-form-field>
+      </mat-card>
+    </div>
+
+    <div style="flex: 1;">
+      <mat-card class="mat-card">
+        <mat-card-header>
+          <mat-card-title>Market Assumptions</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-card class="mat-card">Property Tax Rate (%)
+            <mat-form-field>
+              <input matInput type="number" [(ngModel)]="propertyTaxRate" (input)="updateChart()" step="0.001" />
+            </mat-form-field>
+          </mat-card>
+
+          <mat-card class="mat-card">Maintenance Rate (%)
+            <mat-form-field>
+              <input matInput type="number" [(ngModel)]="maintenanceRate" (input)="updateChart()" step="0.001" />
+            </mat-form-field>
+          </mat-card>
+
+          <mat-card class="mat-card">Home Appreciation Rate (%)
+            <mat-form-field>
+              <input matInput type="number" [(ngModel)]="homeAppreciationRate" (input)="updateChart()" step="0.001" />
+            </mat-form-field>
+          </mat-card>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Chart Section Below -->
   <div class="chart-container">
     <mat-card class="chart-card">
-      <canvas
-        baseChart
-        [data]="lineChartData"
-        [options]="lineChartOptions"
-        [type]="'line'"
-      ></canvas>
+      <canvas baseChart [data]="lineChartData" [options]="lineChartOptions" [type]="'line'"></canvas>
     </mat-card>
   </div>
 </div>

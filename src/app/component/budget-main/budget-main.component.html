@@ -1,24 +1,29 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 <body>
-    <mat-toolbar color="primary">
-        <button mat-icon-button [matMenuTriggerFor]="menu" class="example-icon" aria-label="Example icon-button with menu icon">
-      <mat-icon>menu</mat-icon>
-      <mat-menu #menu="matMenu">
-          <button (click)="switchPage(0)" mat-menu-item>
-            <mat-icon>insert_drive_file</mat-icon>
-            <span>Monthly Budget</span>
-          </button>
-        <button (click)="switchPage(1)" mat-menu-item>
-          <mat-icon>attach_money</mat-icon>
-          <span>Transactions</span>
-        </button>
-        <button (click)="switchPage(2)" mat-menu-item>
-          <mat-icon>timeline</mat-icon>
-          <span>Return on Investment</span>
-        </button>
-        </mat-menu>
-        </button>
+<mat-toolbar color="primary">
+  <button mat-icon-button [matMenuTriggerFor]="menu" class="example-icon"
+          aria-label="Example icon-button with menu icon">
+    <mat-icon>menu</mat-icon>
+    <mat-menu #menu="matMenu">
+      <button (click)="switchPage(0)" mat-menu-item>
+        <mat-icon>insert_drive_file</mat-icon>
+        <span>Monthly Budget</span>
+      </button>
+      <button (click)="switchPage(1)" mat-menu-item>
+        <mat-icon>attach_money</mat-icon>
+        <span>Transactions</span>
+      </button>
+      <button (click)="switchPage(2)" mat-menu-item>
+        <mat-icon>timeline</mat-icon>
+        <span>Return on Investment</span>
+      </button>
+      <button (click)="switchPage(3)" mat-menu-item>
+        <mat-icon>timeline</mat-icon>
+        <span>Buying vs Renting</span>
+      </button>
+    </mat-menu>
+  </button>
         &nbsp;
         <span> Monthly Budget</span>
 

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 import { NgChartsModule } from 'ng2-charts';
@@ -8,12 +8,14 @@ import { ViewChild } from '@angular/core';
 import { BaseChartDirective } from 'ng2-charts';
 import { Chart } from 'chart.js';
 
+
 @Component({
   selector: 'app-buying-vs-renting',
   templateUrl: './buying-vs-renting.component.html',
   styleUrls: ['./buying-vs-renting.component.scss']
 })
 export class BuyingVsRentingComponent {
+  @Output() rateChange = new EventEmitter<number>();
   @ViewChild(BaseChartDirective) chart: BaseChartDirective;
 
   formatter = new Intl.NumberFormat('en-US', {
@@ -29,11 +31,11 @@ export class BuyingVsRentingComponent {
   startingBalance = 40000;
   expectedInvestmentsThisYear = 20000;
   avgRateOfReturn = .07;
-  avgSalaryGrowth = .0020;
+  avgSalaryGrowth = .05;
   rateOfInflation = .025;
 
   // Housing variables
-  housePrice = 1000000;
+  housePrice = 100000;
   downPaymentPercent = 0.20;
   // Growth
   homeAppreciationRate = 0.00;
@@ -41,6 +43,9 @@ export class BuyingVsRentingComponent {
   maintenanceRate = 0.01;
   propertyTaxRate = 0.01;
   mortgageRate = 0.065;
+    selectedCreditScore: string = '780';
+    selectedDownPaymentRange: string = '30';
+    rateAdjustment = 0;
   insuranceRate = 0.005;
   housingStandardDeviation = .03;
   taxRate = .25; //Marginal tax rate for deductions
@@ -128,69 +133,82 @@ export class BuyingVsRentingComponent {
     buying: number[]
     }
     {
+    // Returned Data
     const yearRange: number[] = [];
     const rentingWealth: number[] = [];
     const buyingWealth: number[] = [];
+    //Separately track for buying wealth
+    const buyingInvestmentReturns: number[] = [];
+    const homeEquityTracker: number[] = [];
 
     // Initial setup
     const downPayment = this.housePrice * this.downPaymentPercent;
     const monthlyMortgage = this.calculateMortgagePayment();
     const initialRentingBalance = initialInvestment;
     const initialBuyingBalance = initialInvestment - downPayment;
-
-    yearRange.push(this.age);
-    rentingWealth.push(initialRentingBalance);
-    buyingWealth.push(initialBuyingBalance - initialInvestment*this.closingCostRate);
+    const initialEquity = downPayment - initialInvestment * this.closingCostRate;
 
     let currentHouseValue = this.housePrice;
     let currentRent = this.monthlyRent;
-    let remainingMortgage = this.housePrice * (1 - this.downPaymentPercent);
-    let maintenanceCost = this.housePrice * this.maintenanceRate;  // Initial maintenance cost
+    let remainingMortgage = this.roundToHundredths(this.housePrice * (1 - this.downPaymentPercent));
+    let maintenanceCost = this.roundToHundredths(this.housePrice * this.maintenanceRate);  // Initial maintenance cost
+    let currentYearInvestment = this.expectedInvestmentsThisYear;
+    let annualRent = this.monthlyRent * 12;
+
+    yearRange.push(this.age);
+    rentingWealth.push(initialRentingBalance);
+    buyingInvestmentReturns.push(initialBuyingBalance - initialInvestment * this.closingCostRate);
+    homeEquityTracker.push(initialEquity);
+    buyingWealth.push(buyingInvestmentReturns[0] + homeEquityTracker[0]);
 
     for (let year = 1; year <= this.mortgageYears; year++) {
       // Update house value
-      currentHouseValue *= (Math.round((1 + this.homeAppreciationRate) * 100) / 100);
-
+      currentHouseValue *= this.roundToHundredths(1 + this.homeAppreciationRate);
       // Update maintenance cost with inflation rather than house appreciation
-      maintenanceCost *= (1 + this.rateOfInflation);
-
-      // Calculate mortgage components
-      const annualMortgage = monthlyMortgage * 12;
-      const interestPayment = remainingMortgage * this.mortgageRate;
-      const principalPayment = annualMortgage - interestPayment;
-
-      // Calculate annual housing costs
-      const propertyTax = currentHouseValue * this.propertyTaxRate;
-      const insurance = currentHouseValue * this.insuranceRate;
-      const totalHomeownerCosts = annualMortgage + propertyTax + maintenanceCost + insurance + interestPayment;
-
+      maintenanceCost *= this.roundToThousandth(1 + this.rateOfInflation);
+      // Update investment amount with salary growth
+      currentYearInvestment *= (1 + this.avgSalaryGrowth);
       // Update rent
       currentRent *= (1 + this.rentGrowthRate);
-      const annualRent = currentRent * 12;
+      annualRent = this.roundToHundredths(currentRent * 12);
+
+      // Calculate mortgage components
+      const annualMortgage = this.roundToHundredths(monthlyMortgage * 12);
+      const interestPayment = this.roundToHundredths(remainingMortgage * this.mortgageRate);
+      const principalPayment = this.roundToHundredths(annualMortgage - interestPayment);
+
+      // Calculate annual housing costs
+      const propertyTax = this.roundToHundredths(currentHouseValue * this.propertyTaxRate);
+      const insurance = this.roundToHundredths(currentHouseValue * this.insuranceRate);
+      const totalHomeownerCosts = this.roundToHundredths(annualMortgage + propertyTax + maintenanceCost + insurance + interestPayment);
 
       // Calculate wealth for renting scenario
-      const rentingSavings = this.expectedInvestmentsThisYear;
-      const rentingInvestmentsReturn = rentingWealth[year - 1] * (1 + averageReturn) + rentingSavings;
+      const rentingInvestmentsReturn = this.roundToHundredths(rentingWealth[year - 1] * (1 + averageReturn) + currentYearInvestment);
       rentingWealth.push(rentingInvestmentsReturn);
 
       // Calculate wealth for buying scenario
-      const buyingSavings = this.expectedInvestmentsThisYear - totalHomeownerCosts;
+      const buyingCurrentYearInvestments = this.roundToHundredths(currentYearInvestment - totalHomeownerCosts + annualRent/3);
 
       // Calculate investment returns separately from home equity
-      const investmentReturn = buyingWealth[year - 1] * (1 + averageReturn) + buyingSavings;
+      const buyingInvestmentReturn = this.roundToHundredths(buyingInvestmentReturns[year - 1] * (1 + averageReturn) + buyingCurrentYearInvestments);
+      buyingInvestmentReturns.push(buyingInvestmentReturn);
 
       // Update remaining mortgage
       remainingMortgage -= principalPayment;
 
+      // Calculate home equity
+      const homeEquity = this.roundToHundredths(currentHouseValue - remainingMortgage);
+      homeEquityTracker.push(homeEquity);
+
       // Total wealth is investments plus home equity
-      const homeEquity = currentHouseValue - remainingMortgage;
-      buyingWealth.push(investmentReturn + homeEquity);
+      buyingWealth.push(buyingInvestmentReturn + homeEquity);
 
       yearRange.push(this.age + year);
 
-      console.log(year)
+      console.log(year);
       console.log("totalHomeownerCosts: " + totalHomeownerCosts);
-      console.log("buyingWealth: " + investmentReturn + homeEquity);
+      console.log("principalPayments: " + principalPayment)
+      console.log("buyingWealth: " + this.roundToHundredths(buyingInvestmentReturn + homeEquity) + " buyingInvestments : " + buyingInvestmentReturn + " homeEquity: " + homeEquity);
       console.log("rentingWeatlh: " + rentingInvestmentsReturn);
     }
 
@@ -201,10 +219,33 @@ export class BuyingVsRentingComponent {
     };
   }
 
-//   roundToHundreths(num: number):{rounded: number}{
-//     const rounded = (Math.round(num*100)/100)
-//     return rounded;
-//   }
+  private readonly rateGrid: { [key: string]: { [key: string]: number } } = {
+      '780': { '70': 0.000, '40': 0.000, '30': 0.000, '25': 0.000, '20': 0.375, '15': 0.375, '10': 0.250, '5': 0.250, '0': 0.125 },
+      '760': { '70': 0.000, '40': 0.000, '30': 0.000, '25': 0.250, '20': 0.625, '15': 0.625, '10': 0.500, '5': 0.500, '0': 0.250 },
+      '740': { '70': 0.000, '40': 0.000, '30': 0.125, '25': 0.375, '20': 0.875, '15': 1.000, '10': 0.750, '5': 0.625, '0': 0.500 },
+      '720': { '70': 0.000, '40': 0.000, '30': 0.250, '25': 0.750, '20': 1.250, '15': 1.250, '10': 1.000, '5': 0.875, '0': 0.750 },
+      '700': { '70': 0.000, '40': 0.000, '30': 0.375, '25': 0.875, '20': 1.375, '15': 1.500, '10': 1.250, '5': 1.125, '0': 0.875 },
+      '680': { '70': 0.000, '40': 0.000, '30': 0.625, '25': 1.125, '20': 1.750, '15': 1.875, '10': 1.500, '5': 1.375, '0': 1.125 },
+      '660': { '70': 0.000, '40': 0.000, '30': 0.750, '25': 1.375, '20': 1.875, '15': 2.125, '10': 1.750, '5': 1.625, '0': 1.250 },
+      '640': { '70': 0.000, '40': 0.000, '30': 1.125, '25': 1.500, '20': 2.250, '15': 2.500, '10': 2.000, '5': 1.875, '0': 1.500 },
+      '620': { '70': 0.000, '40': 0.125, '30': 1.500, '25': 2.125, '80': 2.750, '85': 2.875, '10': 2.625, '5': 2.250, '0': 1.750 }
+    };
+
+    updateRate() {
+      this.rateAdjustment = this.rateGrid[this.selectedCreditScore][this.selectedDownPaymentRange];
+      this.mortgageRate += this.rateAdjustment/100
+      this.downPaymentPercent = this.rateGrid[this.selectedCreditScore][this.selectedDownPaymentRange];
+      this.rateChange.emit(this.rateAdjustment);
+
+  }
+
+  roundToHundredths(num: number): number{
+    return (Math.round(num*100)/100);
+  }
+
+  roundToThousandth(num: number): number{
+      return (Math.round(num*1000)/1000);
+  }
 
   lineChartData: ChartData<'line'> = {
     labels: this.housingScenarios.yearRange,
